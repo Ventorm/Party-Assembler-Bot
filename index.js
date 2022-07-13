@@ -549,8 +549,8 @@ const mailing = async function (hours, minutes, sender) {
     const timePoll = await createTimePoll()
         
     await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id)
-    await pollsAPI.update(3, gamePoll.poll.id, gamePoll.message_id)
-    await pollsAPI.update(2, timePoll.poll.id, timePoll.message_id)
+    await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id)
+    await pollsAPI.update(3, timePoll.poll.id, timePoll.message_id)
 
     enableResultUpdates()
 
@@ -564,7 +564,7 @@ const mailing = async function (hours, minutes, sender) {
     const gamePoll = await createGamePoll()
 
     await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id)
-    await pollsAPI.update(3, gamePoll.poll.id, gamePoll.message_id)
+    await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id)
 
     enableResultUpdates()
 
@@ -572,7 +572,16 @@ const mailing = async function (hours, minutes, sender) {
   }
 
   if (sender.id !== admin) {
-    sendMessage(admin, `Информация об инициаторе опросов ниже:\n${sender.first_name} ${sender.last_name}\n${sender.username}`)
+    if (sender.username === undefined) {
+      sender.username = ``
+    }
+    if (sender.first_name === undefined) {
+      sender.first_name = ``
+    }
+    if (sender.last_name === undefined) {
+      sender.last_name = ``
+    }
+    sendMessage(admin, `Инициатор опросов:\n<b>${sender.first_name} ${sender.last_name}\n${sender.username}</b>`, `HTML`)
   }
 }
 
@@ -602,16 +611,16 @@ const createCheckPoll = async function (normal = true) {
 const createTimePoll = async function () {
   const time_options = await createTimeOptions(true)
   
-  const result = await sendPoll(twinkByAdmin, 'Выбор времени (по мск) 🕰\nТы можешь отметить Все удобные тебе варианты ✅', time_options);
+  const result = await sendPoll(twinkByAdmin, texts.chooseTime, time_options);
   return result;
 }
 
 
 const createGamePoll = async function () {
-  const gamesQuery = (await gamesAPI.getAll()).data
+  const allGames = (await gamesAPI.getAll()).data
   let games = []
-  gamesQuery.forEach(element => {
-    games.push(element.name)
+  allGames.forEach(game => {
+    games.push(game.name)
   });
 
   const result = await sendPoll(twinkByAdmin, texts.chooseGame, games)
@@ -1003,8 +1012,8 @@ const answerProcessing = async function (ctx) {
           return (await player_voteAPI.update(player, {polls_sent: 2, ready_to_play: true}))
         }
         // если опросов всего 2 (поздний сбор), то отправить сразу опрос с играми, т.к. опрос по времени игнорируется
-        if (activePolls[1].poll_id === null) {
-          await forwardMessage(player, activePolls[2].message_id)
+        if (activePolls[2].poll_id === null) {
+          await forwardMessage(player, activePolls[1].message_id)
           return (await player_voteAPI.update(player, {polls_sent: 3, ready_to_play: true}))
         }
         
@@ -1023,38 +1032,38 @@ const answerProcessing = async function (ctx) {
       return (await player_voteAPI.update(player, {ready_to_play: false}))
     }
   }
-  // второй опрос (время)
+  // второй опрос (игры)
   if (pollID === activePolls[1].poll_id) {
     if (options.length > 0) {
       if (player_vote.polls_sent === 2) {
         await forwardMessage(player, activePolls[2].message_id)
         await player_voteAPI.update(player, {polls_sent: 3})
-        return (await player_timeAPI.create(player, options))
+        return await player_gameAPI.create(player, options)
       }
       if (player_vote.polls_sent === 3) {
-        return (await player_timeAPI.create(player, options))
+        return (await player_gameAPI.create(player, options))
       }
     }
 
     if (options.length === 0) {
-      return (await player_timeAPI.delete(player))
+      return (await player_gameAPI.delete(player))
     }
   }
-  // третий опрос (игры)
+  // третий опрос (время)
   if (pollID === activePolls[2].poll_id) {
     if (options.length > 0) {
       if (player_vote.filled_all_polls === false) {
         await player_voteAPI.update(player, {filled_all_polls: true})
-        await player_gameAPI.create(player, options)
+        await player_timeAPI.create(player, options)
         return (await sendAllResultMessages(player))
       }
       if (player_vote.filled_all_polls === true) {
-        return (await player_gameAPI.create(player, options))
+        return (await player_timeAPI.create(player, options))
       }
     }
     
     if (options.length === 0) {
-      return (await player_gameAPI.delete(player))
+      return (await player_timeAPI.delete(player))
     }
   }
 }
@@ -1066,7 +1075,7 @@ const privateStatus = async function (ctx) {
 
   if (status === 'kicked') {
     await playersAPI.update(user_id, false)
-    return console.log(`Пользователь ${user_id} заблокировал переписку с ботом`)
+    // return console.log(`Пользователь ${user_id} заблокировал переписку с ботом`)
   }
   if (status === 'member') {
     const created_at = Date.parse((await playersAPI.get(user_id)).data.was_created)
@@ -1077,7 +1086,7 @@ const privateStatus = async function (ctx) {
       await playersAPI.update(user_id, true)
       const result = await ctx.reply(texts.welcomeBack, groupInvitationButtons)
     }
-    return console.log(`Пользователь ${user_id} разблокировал переписку с ботом`)
+    // return console.log(`Пользователь ${user_id} разблокировал переписку с ботом`)
   }
 }
 
@@ -1085,11 +1094,11 @@ const privateStatus = async function (ctx) {
 const groupStatus = async function (ctx, status) {
   if (status === true) {
     const user = ctx.update.message.new_chat_member.id
-    return console.log(`Пользователь ${user} вступил в группу`)
+    //return console.log(`Пользователь ${user} вступил в группу`)
   }
   if (status === false) {
     const user = ctx.update.message.left_chat_participant.id
-    return console.log(`Пользователь ${user} покинул группу`)
+    //return console.log(`Пользователь ${user} покинул группу`)
   }
 }
 
@@ -1119,11 +1128,16 @@ bot.command('assemble', async (ctx) => {
   if (created !== '') {
     const polls = (await pollsAPI.getAll()).data
     const sender = ctx.update.message.from
-    await ctx.deleteMessage()
+    
     if (polls[0].message_id !== null) {
-      return sendMessage(sender.id, `На сегодня уже есть Активные опросы`)
+      await sendMessage(sender.id, `На сегодня уже есть Активные опросы`)
+      return await ctx.deleteMessage()
     }
-    return beforeMailing(polls, sender)
+    else {
+      await beforeMailing(polls, sender)
+      return await ctx.deleteMessage()
+    }
+    
   }
   sendMessage(player_id, texts.sorry, 'HTML')  
 })
@@ -1132,9 +1146,11 @@ bot.command('invite', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
   if (created !== '') {
-    await ctx.deleteMessage()
-    await sendMessage(player_id, `Ты можешь поделиться моими возможностями со своим другом — ему достаточно будет отправить мне в чат Твой код для приглашения.\n<b>Ниже сам код (копируется автоматически при нажатии)</b>:`, 'HTML')
-    return await sendMessage(player_id, `<code>${player_id}</code>`, 'HTML')
+    await sendMessage(player_id, `Ты можешь поделиться моим функционалом со своим другом.\nНиже ссылка на мой чат`, `HTML`)
+    await sendMessage(player_id, `<b>https://t.me/deadly_party_bot</b>`, `HTML`)
+    await sendMessage(player_id, `При первом запуске с новым пользователем мне нужно получить от него Твой код.\n\nЭтот код твоему другу потребуется отправить ко мне в чат.\n<b>Ниже в сообщении сам код (копируется автоматически при нажатии)</b>`, 'HTML')
+    await sendMessage(player_id, `<code>${player_id}</code>`, 'HTML')
+    return await ctx.deleteMessage()
     //return await sendMessage(player_id, `Ты можешь поделиться моими возможностями со своим другом — ему достаточно будет отправить мне в чат Твой код для приглашения.\n<b>А вот и сам код (копируется при нажатии)</b>:\n\n<code>${player_id}</code>`, 'HTML')
   }
   sendMessage(player_id, texts.sorry, 'HTML')  
@@ -1144,8 +1160,8 @@ bot.command('group', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
   if (created !== '') {
-    await ctx.deleteMessage()
-    return await ctx.replyWithHTML(`Обсудить предстоящие игры или просто пофлудить — всё это можно сделать в группе`, groupInvitationButtons)
+    await ctx.replyWithHTML(`Обсудить предстоящие игры или просто пофлудить — всё это можно сделать в группе`, groupInvitationButtons)
+    return await ctx.deleteMessage()
   }
   sendMessage(player_id, texts.sorry, 'HTML')  
 })
@@ -1154,15 +1170,15 @@ bot.command('settings', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
   if (created !== '') {
-    await ctx.deleteMessage()
-    return await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx))
+    await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx))
+    return await ctx.deleteMessage()
   }
   sendMessage(player_id, texts.sorry, 'HTML')  
 })
 
 bot.command('about', async (ctx) => {
-  await ctx.deleteMessage()
-  return await ctx.replyWithHTML(texts.about)
+  await ctx.replyWithHTML(texts.about)
+  return await ctx.deleteMessage()
 })
 
 // обработка нажатий в настройках
@@ -1248,6 +1264,7 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
 const devFun = async function(id) {
   setTimeout(async () => {
+    //sendPoll(admin, `Лучше?`, [`Да`,`Без изменений`])
     /*
     let userTime = (await player_timeAPI.get(admin)).data
     userTime = userTime.map(timeOption => timeOption.time)

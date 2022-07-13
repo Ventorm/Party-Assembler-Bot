@@ -16,8 +16,8 @@ class player_timeAPI {
     }
     
     //creating player's options
-    async create(player_id, time) {
-        const receivedPost = await axios.post(`http://localhost:${PORT}/player_time/`, {player_id, time})
+    async create(player_id, time_options) {
+        const receivedPost = await axios.post(`http://localhost:${PORT}/player_time/`, {player_id, time_options})
         return receivedPost
     }
 

@@ -41,7 +41,7 @@ class Player_settingsController {
         const {player_id} = req.body
         let multiQuery = '';
 
-        multiQuery += `INSERT into player_settings (player_id, is_personal_result, enabled, before_reminder) VALUES (${player_id}, true, true, 45);`
+        multiQuery += `INSERT into player_settings (player_id, is_personal_result, enabled, before_reminder) VALUES (${player_id}, true, true, 30);`
         
         multiQuery += `INSERT into player_settings (player_id, is_personal_result, enabled, before_reminder) VALUES (${player_id}, false, true, -1);`
 

@@ -27,6 +27,7 @@ class PollsController {
 
         const today = new Date();
         const year = today.getFullYear();
+        // месяц берётся от 0 до 11, для удобства далем +1
         const month = today.getMonth() + 1;
         const date = today.getDate();
         const hours = today.getHours();

@@ -1,4 +1,5 @@
 const db = require('../db')
+const { end_time } = require('../const.data')
 
 
 class Player_timeController {
@@ -17,10 +18,11 @@ class Player_timeController {
 
 
     async createPlayer_time(req, res) {
-        const {player_id, time} = req.body
+        const {player_id, time_options} = req.body
         let multiQuery = ``;
-        for (let count = 0; count < time.length; count++) {
-            multiQuery += `INSERT into player_time (player_id, time) VALUES (${player_id}, ${22 - time[count]});`
+        // time_options - это опции времени, которые мы будем добавлять в БД для дальнейшего анализа
+        for (let count = 0; count < time_options.length; count++) {
+            multiQuery += `INSERT into player_time (player_id, time) VALUES (${player_id}, ${end_time - time_options[count]});`
         }
         const player_time = await db.query(multiQuery)
         
