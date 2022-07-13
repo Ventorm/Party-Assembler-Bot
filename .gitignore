@@ -1,20 +1,10 @@
-./texts.js
 texts.js
-./const.data.js
 const.data.js
-./sanbox.js
-sanbox.js
-./sanbox 2.js
-sanbox 2.js
-./later.js
+sandbox.js
+sandbox 2.js
 later.js
-./functions.js
 functions.js
-./buttons.js
 buttons.js
-./backup.js
 backup.js
 
-
-./node_modules
 node_modules
