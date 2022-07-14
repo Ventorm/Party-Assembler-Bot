@@ -4,7 +4,7 @@ const { Telegraf, Markup } = require('telegraf')
 const schedule = require('node-schedule');
 
 const { texts } = require('./texts')
-const { PORT, token, end_time, before_reminder, admin, twinkByAdmin, mainGroup, adminHelper, botID} = require('./const.data.js')
+const { httpDB, PORT, token, end_time, before_reminder, admin, twinkByAdmin, mainGroup, adminHelper, botID} = require('./const.data.js')
 const playersAPI = require('./players/players.API.js');
 const gamesAPI = require('./games/games.API.js');
 const pollsAPI = require('./polls/polls.API.js');
@@ -514,7 +514,7 @@ const actionProcessing = async function (ctx) {
 
 
 const beforeMailing = async function (polls, sender) {
-  //берём число создания последнего опроса (игры)
+  //берём дату создания последнего опроса (игры)
   const currentDate = new Date();
   const was_created = new Date(Date.parse(polls[0].was_created));
 

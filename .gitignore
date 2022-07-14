@@ -1,10 +1,14 @@
-texts.js
-const.data.js
 sandbox.js
 sandbox 2.js
+.env
+texts.js
+const.data.js
+db.js
 later.js
 functions.js
 buttons.js
 backup.js
 
+
 node_modules
+
