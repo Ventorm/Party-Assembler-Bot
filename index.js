@@ -349,9 +349,9 @@ const textProcessing = async function (ctx) {
         const referalData = (await playersAPI.get(referal)).data
         if (referalData !== '') {
           await newPlayer(ctx, referal);
-          await sendMessage(sender.id, `Приглашение подтверждено 😊\nТеперь тебе доступен весь функционал!`)
+          await sendMessage(sender.id, texts.allowed)
           setTimeout(async () => {
-            await ctx.reply(texts.allowed, groupInvitationButtons);
+            await ctx.reply(texts.shortInfo, groupInvitationButtons);
           }, 1500);
           setTimeout(async () => {
             await addToMailing(sender.id);
@@ -1139,7 +1139,7 @@ bot.command('assemble', async (ctx) => {
     }
     
   }
-  sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry, 'HTML')  
 })
 
 bot.command('invite', async (ctx) => {
@@ -1153,17 +1153,17 @@ bot.command('invite', async (ctx) => {
     return await ctx.deleteMessage()
     //return await sendMessage(player_id, `Ты можешь поделиться моими возможностями со своим другом — ему достаточно будет отправить мне в чат Твой код для приглашения.\n<b>А вот и сам код (копируется при нажатии)</b>:\n\n<code>${player_id}</code>`, 'HTML')
   }
-  sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry, 'HTML')  
 })
 
 bot.command('group', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
   if (created !== '') {
-    await ctx.replyWithHTML(`Обсудить предстоящие игры или просто пофлудить — всё это можно сделать в группе`, groupInvitationButtons)
+    await ctx.replyWithHTML(texts.group, groupInvitationButtons)
     return await ctx.deleteMessage()
   }
-  sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry, 'HTML')  
 })
 
 bot.command('settings', async (ctx) => {
@@ -1173,7 +1173,7 @@ bot.command('settings', async (ctx) => {
     await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx))
     return await ctx.deleteMessage()
   }
-  sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry, 'HTML')  
 })
 
 bot.command('about', async (ctx) => {
@@ -1270,7 +1270,7 @@ const devFun = async function(id) {
     userTime = userTime.map(timeOption => timeOption.time)
     console.log(userTime)
     */
-    //stopPolls()
+    await stopPolls()
     //console.log(await createPersonalResult(admin, (await createFilledResult())))
     //sendAllResultMessages(player_id, player_vote)
     //console.log((await player_voteAPI.get(45)).data === '')
