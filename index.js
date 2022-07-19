@@ -241,10 +241,12 @@ const sendPoll = async function (chat_id, question, options, multiple_answers = 
 }
 
 
-const stopPolls = async function(method = 'stopPoll') {
+const stopPolls = async function() {
+  const method = 'stopPoll'
   const polls = (await pollsAPI.getAll()).data
   polls.forEach(async poll => {
     if (poll.message_id !== null) {
+
       const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${twinkByAdmin}&message_id=${poll.message_id}`;
       try {
         const result = (await axios.get(url)).data.result
@@ -253,6 +255,9 @@ const stopPolls = async function(method = 'stopPoll') {
       }
     }
   });
+  await player_voteAPI.deleteAll()
+  await player_gameAPI.deleteAll()
+  await player_timeAPI.deleteAll()
   return (await pollsAPI.updateAll())
 }
 
@@ -513,18 +518,28 @@ const actionProcessing = async function (ctx) {
 }
 
 
-const beforeMailing = async function (polls, sender) {
+const pollsCreatedToday = async function() {
   //берём дату создания последнего опроса (игры)
   const currentDate = new Date();
+  const polls = (await pollsAPI.getAll()).data
   const was_created = new Date(Date.parse(polls[0].was_created));
 
   const dayComparsion = (currentDate.getDate() - was_created.getDate());
   const monthComparsion = (currentDate.getMonth() - was_created.getMonth());
-  
+
   if (dayComparsion === 0 && monthComparsion === 0) {
+    return true
+  }
+  return false
+}
+
+
+const beforeMailing = async function (polls, sender) {  
+  if (await pollsCreatedToday()) {
     return sendMessage(sender.id, 'Сегодня опросы уже создавали, завтра можно будет создать новые')
   }
   else {
+    const currentDate = new Date();
     let hours = currentDate.getHours();
     let minutes = currentDate.getMinutes();
     if (hours === end_time + 1 || (hours === end_time && minutes >= 30)) {
@@ -540,10 +555,6 @@ const beforeMailing = async function (polls, sender) {
 
 const mailing = async function (hours, minutes, sender) {
   if (hours < end_time - 1 || (hours === end_time - 1 && minutes < 30)) {
-    await player_voteAPI.deleteAll()
-    await player_gameAPI.deleteAll()
-    await player_timeAPI.deleteAll()
-
     const checkPoll = await createCheckPoll(true)
     const gamePoll = await createGamePoll()
     const timePoll = await createTimePoll()
@@ -557,9 +568,6 @@ const mailing = async function (hours, minutes, sender) {
     mailingFirstPoll(checkPoll.message_id)    
   }
   else {
-    await player_voteAPI.deleteAll()
-    await player_gameAPI.deleteAll()
-
     const checkPoll = await createCheckPoll(false)
     const gamePoll = await createGamePoll()
 
@@ -638,8 +646,7 @@ const enableResultUpdates = async function () {
       return await schedule.gracefulShutdown();
     }    
 
-    updateAllResultMessages()
-
+    await updateAllResultMessages()    
   })
 }
 
@@ -1270,7 +1277,8 @@ const devFun = async function(id) {
     userTime = userTime.map(timeOption => timeOption.time)
     console.log(userTime)
     */
-    await stopPolls()
+   //
+    
     //console.log(await createPersonalResult(admin, (await createFilledResult())))
     //sendAllResultMessages(player_id, player_vote)
     //console.log((await player_voteAPI.get(45)).data === '')
@@ -1280,18 +1288,7 @@ const devFun = async function(id) {
     /* // рассылка по всем пользователям
     const message = `Привет!\nУ меня произошло <b>крупное обновление</b> — теперь я перешёл в статус Бета-тестирования! 😊\n\n<b>Основные изменения:</b>\n<b>1.</b> Добавлена рассылка расписания игр на сегодня. Расписание отображает результаты голосований по играм и времени, что позволяет легко ориентироваться в расписании и планировать своё время. Расписание можно включать/отключать (оно беззвучно и автоматически обновляется каждые 5 минут)\n<b>2.</b> Добавлено интерактивное Меню, где можно:\n• Настроить уведомления по расписаниям, чтобы узнать о набранных в ближайшее время играх. По умолчанию установлено время 30 минут до начала мероприятия (можно установить 45, 30, 15, 5 минут или отключить полностью). Само уведомление ещё дорабатывается, обратная связь принимается\n• В 2 клика запустить опросы на сегодня (если они ещё не запускались)\n• Получить ссылку на группу, где можно и обсудить предстоящие игры, и просто пофлудить`
     const enabled_users = await (await playersAPI.getAll(true)).data
-    //enabled_users.forEach(async user => {await sendMessage(user.id, message, `HTML`)});
     */
-    /*
-    const fullResult = await createFilledResult()
-    const personalResult = await createPersonalResult(admin, fullResult)
-    console.log(await sendMessage(admin, normalPersonalResult, 'HTML'))
-    console.log((await player_settingsAPI.get(admin)).data)
-    */
-   //console.log((await player_settingsAPI.get(admin)).data[1])
-    
-    //console.log(await (await playerSettings(admin)).data)
-
     
   }, 500);
 }
