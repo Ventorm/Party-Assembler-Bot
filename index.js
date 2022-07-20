@@ -133,16 +133,14 @@ const personalSettingsButtons = async function (ctx, updatedData = undefined) {
     enable_disable = enabledNow
   }
 
-  let buttons = Markup.inlineKeyboard(
-    [
+  let buttons = Markup.inlineKeyboard([
       [Markup.button.callback(`45 минут ${mark1}`, 'personal_45'), Markup.button.callback(`30 минут ${mark2}`, 'personal_30')],
       [Markup.button.callback(`15 минут ${mark3}`, 'personal_15'), Markup.button.callback(`5 минут ${mark4}`, 'personal_5')],
       [Markup.button.callback(`Отключить Персональные уведомления ${mark5}`, 'disablePersonalNotify')],
       enable_disable,
       [Markup.button.callback('👉 Настроить Общее расписание 👈', 'showFullSettings')],
       [Markup.button.callback('Скрыть окно настроек', 'delete')]
-    ]
-  )
+  ])
 
   return buttons
 
@@ -193,26 +191,26 @@ const fullSettingsButtons = async function (ctx, updatedData = undefined) {
     enable_disable = enabledNow
   }
 
-  let buttons = Markup.inlineKeyboard(
-    [
+  let buttons = Markup.inlineKeyboard([
       [Markup.button.callback(`45 минут ${mark1}`, 'full_45'), Markup.button.callback(`30 минут ${mark2}`, 'full_30')],
       [Markup.button.callback(`15 минут ${mark3}`, 'full_15'), Markup.button.callback(`5 минут ${mark4}`, 'full_5')],
       [Markup.button.callback(`Отключить Общие уведомления ${mark5}`, 'disableFullNotify')],
       enable_disable,
       [Markup.button.callback('👉 Настроить Персональное расписание 👈', 'showPersonalSettings')],
       [Markup.button.callback('Скрыть окно настроек', 'delete')]
-    ]
-  )
-
+  ])
   return buttons
 
 }
 
 
-
-
 const testButton = Markup.inlineKeyboard([
   [Markup.button.url('Hello there', 'https://t.me/+AoRKG2Wb3_Y2MTBi')]
+])
+
+
+const deleteButton = Markup.inlineKeyboard([
+  [Markup.button.callback('Скрыть сообщение  🗑', 'delete')]
 ])
 
 
@@ -262,9 +260,15 @@ const stopPolls = async function() {
 }
 
 
-const sendMessage = async function (chat_id, content, parse_mode = '',  method = 'sendMessage', type = 'text') {
+const sendMessage = async function (chat_id, content, buttons = false, parse_mode = 'HTML') {
+  const method = 'sendMessage'
+  const type = 'text'
   content = encodeURIComponent(content);
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&${type}=${content}&parse_mode=${parse_mode}`
+  let url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&${type}=${content}&parse_mode=${parse_mode}`
+
+  if (buttons) {
+    url += `&reply_markup=${encodeURIComponent(JSON.stringify(buttons.reply_markup))}`
+  }
   
   try {
     const result = (await axios.post(url)).data.result.message_id  
@@ -275,9 +279,14 @@ const sendMessage = async function (chat_id, content, parse_mode = '',  method =
 }
 
 
-const editMessage = async function (chat_id, newText = '', message_id, parse_mode = '', method = 'editMessageText') {
+const editMessage = async function (chat_id, newText = '', message_id, buttons = false, parse_mode = 'HTML') {
+  const method = 'editMessageText'
   newText = encodeURIComponent(newText);
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}&text=${newText}&parse_mode=${parse_mode}`
+  let url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}&text=${newText}&parse_mode=${parse_mode}`
+
+  if (buttons) {
+    url += `&reply_markup=${encodeURIComponent(JSON.stringify(buttons.reply_markup))}`
+  }
 
   try {
     const result = (await axios.get(url)).data.result.message_id
@@ -589,7 +598,7 @@ const mailing = async function (hours, minutes, sender) {
     if (sender.last_name === undefined) {
       sender.last_name = ``
     }
-    sendMessage(admin, `Инициатор опросов:\n<b>${sender.first_name} ${sender.last_name}\n${sender.username}</b>`, `HTML`)
+    sendMessage(admin, `Инициатор опросов:\n<b>${sender.first_name} ${sender.last_name}\n${sender.username}</b>`)
   }
 }
 
@@ -908,21 +917,21 @@ const updateAllResultMessages = async function () {
       if (player_settings[1].enabled === true) {
 
         if (player_settings[1].before_reminder === -1) {
-          await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id, `HTML`)
+          await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id)
         }
         else {
           let time_check_id = end_time - currentHour - 1
           // если нет игр в ближайший час
           if (fullResult[time_check_id].length === 0) {
-            await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id, `HTML`)
+            await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id)
           }
           else {
             if (leftMinutes !== player_settings[1].before_reminder) {
-              await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id, `HTML`)
+              await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id)
             }
             else {
               await deleteMessage(player_info.player_id, player_info.full_result_message_id)
-              let sentFullResult = await sendMessage(player_info.player_id, normalFullResult, 'HTML')
+              let sentFullResult = await sendMessage(player_info.player_id, normalFullResult)
               await player_voteAPI.update(player_info.player_id, {full_result_message_id: sentFullResult})
             }
           }
@@ -936,25 +945,25 @@ const updateAllResultMessages = async function () {
 
         // если Персональное расписание является пустым, то оно передаёт строку, а не массив, потому просто обновить
         if (typeof(personalResult) === `string`) {
-          await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id, `HTML`)
+          await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id)
         }
         else {
           if (player_settings[0].before_reminder === -1) {
-            await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id, `HTML`)
+            await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id)
           }
           else {
             let time_check_id = end_time - currentHour - 1
             // если нет игр в ближайший час
             if (personalResult[time_check_id].length === 0) {
-              await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id, `HTML`)
+              await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id)
             }
             else {
               if (leftMinutes !== player_settings[0].before_reminder) {
-                await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id, `HTML`)
+                await editMessage(player_info.player_id, normalPersonalResult, player_info.personal_result_message_id)
               }
               else {
                 await deleteMessage(player_info.player_id, player_info.personal_result_message_id)
-                let sentPersonalResult = await sendMessage(player_info.player_id, normalPersonalResult, 'HTML')
+                let sentPersonalResult = await sendMessage(player_info.player_id, normalPersonalResult)
                 await player_voteAPI.update(player_info.player_id, {personal_result_message_id: sentPersonalResult})
               }
             }
@@ -984,7 +993,7 @@ const sendAllResultMessages = async function (player_id, player_vote = undefined
   if (fullResultSettings.enabled === true) {
     if (player_vote.full_result_message_id === null) {
       const normalFullResult = await setResultToNormal(fullResult, true)
-      const messageFullResult = await sendMessage(player_id, normalFullResult, 'HTML')
+      const messageFullResult = await sendMessage(player_id, normalFullResult)
   
       await player_voteAPI.update(player_id, {full_result_message_id: messageFullResult})
     }
@@ -994,7 +1003,7 @@ const sendAllResultMessages = async function (player_id, player_vote = undefined
     if (player_vote.personal_result_message_id === null) {
       const personalResult = await createPersonalResult(player_id, fullResult)
       const normalPersonalResult = await setResultToNormal(personalResult, false, player_id)
-      const messagePersonalResult = await sendMessage(player_id, normalPersonalResult, 'HTML')
+      const messagePersonalResult = await sendMessage(player_id, normalPersonalResult)
       
       await player_voteAPI.update(player_id, {personal_result_message_id: messagePersonalResult})
     }
@@ -1031,7 +1040,7 @@ const answerProcessing = async function (ctx) {
     }
 
     if (options[0] === 1) {
-      await sendMessage(player, texts.cantToday, `HTML`)
+      await sendMessage(player, texts.cantToday)
       return (await player_voteAPI.update(player, {ready_to_play: false}))
     }
 
@@ -1146,21 +1155,21 @@ bot.command('assemble', async (ctx) => {
     }
     
   }
-  await sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry)  
 })
 
 bot.command('invite', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
   if (created !== '') {
-    await sendMessage(player_id, `Ты можешь поделиться моим функционалом со своим другом.\nНиже ссылка на мой чат`, `HTML`)
-    await sendMessage(player_id, `<b>https://t.me/deadly_party_bot</b>`, `HTML`)
-    await sendMessage(player_id, `При первом запуске с новым пользователем мне нужно получить от него Твой код.\n\nЭтот код твоему другу потребуется отправить ко мне в чат.\n<b>Ниже в сообщении сам код (копируется автоматически при нажатии)</b>`, 'HTML')
-    await sendMessage(player_id, `<code>${player_id}</code>`, 'HTML')
+    await sendMessage(player_id, `Ты можешь поделиться моим функционалом со своим другом.\nНиже ссылка на мой чат`)
+    await sendMessage(player_id, `<b>https://t.me/deadly_party_bot</b>`)
+    await sendMessage(player_id, `При первом запуске с новым пользователем мне нужно получить от него Твой код.\n\nЭтот код твоему другу потребуется отправить ко мне в чат.\n<b>Ниже в сообщении сам код (копируется автоматически при нажатии)</b>`)
+    await sendMessage(player_id, `<code>${player_id}</code>`)
     return await ctx.deleteMessage()
     //return await sendMessage(player_id, `Ты можешь поделиться моими возможностями со своим другом — ему достаточно будет отправить мне в чат Твой код для приглашения.\n<b>А вот и сам код (копируется при нажатии)</b>:\n\n<code>${player_id}</code>`, 'HTML')
   }
-  await sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry)  
 })
 
 bot.command('group', async (ctx) => {
@@ -1170,7 +1179,7 @@ bot.command('group', async (ctx) => {
     await ctx.replyWithHTML(texts.group, groupInvitationButtons)
     return await ctx.deleteMessage()
   }
-  await sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry)  
 })
 
 bot.command('settings', async (ctx) => {
@@ -1180,7 +1189,7 @@ bot.command('settings', async (ctx) => {
     await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx))
     return await ctx.deleteMessage()
   }
-  await sendMessage(player_id, texts.sorry, 'HTML')  
+  await sendMessage(player_id, texts.sorry)  
 })
 
 bot.command('about', async (ctx) => {
@@ -1271,6 +1280,11 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
 const devFun = async function(id) {
   setTimeout(async () => {
+    //sendMessage(admin, 123, deleteButton)
+    //console.log(await sendMessage(admin, 123, testButton))
+    //console.log(await editMessage(admin, 321, 3752, deleteButton))
+    //console.log(await editMessage(admin, 123, 3752, testButton))
+    
     //sendPoll(admin, `Лучше?`, [`Да`,`Без изменений`])
     /*
     let userTime = (await player_timeAPI.get(admin)).data
