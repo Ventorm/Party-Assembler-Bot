@@ -26,19 +26,19 @@ class Player_voteController {
             personal_result_message_id} = req.body
 
         let multiQuery = '';
-        if (polls_sent !== undefined) {
+        if (polls_sent) {
             multiQuery += (`Update player_vote SET polls_sent = ${polls_sent} WHERE player_id = ${player_id};`)
         }
-        if (ready_to_play !== undefined) {
+        if (ready_to_play) {
             multiQuery += (`Update player_vote SET ready_to_play = ${ready_to_play} WHERE player_id = ${player_id};`)
         }
-        if (filled_all_polls === true) {
+        if (filled_all_polls) {
             multiQuery += (`Update player_vote SET filled_all_polls = true WHERE player_id = ${player_id};`)
         }
-        if (full_result_message_id !== undefined) {
+        if (full_result_message_id) {
             multiQuery += (`Update player_vote SET full_result_message_id = ${full_result_message_id} WHERE player_id = ${player_id};`)
         }
-        if (personal_result_message_id !== undefined) {
+        if (personal_result_message_id) {
             multiQuery += (`Update player_vote SET personal_result_message_id = ${personal_result_message_id} WHERE player_id = ${player_id};`)
         }
 

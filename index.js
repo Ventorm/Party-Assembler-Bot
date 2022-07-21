@@ -21,7 +21,7 @@ const bot = new Telegraf(token)
 const getStarted = async function (ctx) {
   const id = ctx.update.message.from.id;
   const user = (await playersAPI.get(id)).data;
-  if (user === '') {
+  if (!user) {
     await ctx.reply(texts.welcome);
     setTimeout(async () => {
       await ctx.reply(texts.confirm);
@@ -44,9 +44,9 @@ const newPlayer = async function(ctx, invited_from) {
 
 const addToMailing = async function(user_id) {
   const polls = (await pollsAPI.getAll()).data
-  if (polls[0].message_id !== null) {
+  if (polls[0].message_id) {
     const player_vote = await (await player_voteAPI.get(user_id)).data
-    if (player_vote === '') {
+    if (!player_vote) {
       sendMessage(user_id, texts.justJoined)
       setTimeout(async () => {
         forwardMessage(user_id, polls[0].message_id)
@@ -212,7 +212,7 @@ const stopPolls = async function() {
   const method = 'stopPoll'
   const polls = (await pollsAPI.getAll()).data
   polls.forEach(async poll => {
-    if (poll.message_id !== null) {
+    if (poll.message_id) {
 
       const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${twinkByAdmin}&message_id=${poll.message_id}`;
       try {
@@ -226,6 +226,18 @@ const stopPolls = async function() {
   await player_gameAPI.deleteAll()
   await player_timeAPI.deleteAll()
   return (await pollsAPI.updateAll())
+}
+
+
+const createCurrentTimeStamp = function () {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const date = today.getDate();
+  const hours = today.getHours();
+  const minutes = today.getMinutes();
+  const seconds = today.getSeconds();
+  return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 }
 
 
@@ -320,7 +332,7 @@ const textProcessing = async function (ctx) {
   const sender = ctx.message.from;
   const incomingText = ctx.message.text;
   const created = (await playersAPI.get(sender.id)).data
-  if (created !== '') {
+  if (created) {
 
     return ''
   }
@@ -330,7 +342,7 @@ const textProcessing = async function (ctx) {
     if (!isNaN(referal)) {
       if (typeof(referal) === 'number') {
         const referalData = (await playersAPI.get(referal)).data
-        if (referalData !== '') {
+        if (referalData) {
           await newPlayer(ctx, referal);
           await sendMessage(sender.id, texts.allowed)
           setTimeout(async () => {
@@ -347,10 +359,10 @@ const textProcessing = async function (ctx) {
 
 
 const actionProcessing = async function (ctx) {
-  if (ctx.update.message !== undefined) {
+  if (ctx.update.message) {
     player_id = ctx.update.message.from.id
   }
-  if (ctx.update.callback_query !== undefined){
+  if (ctx.update.callback_query){
     player_id = ctx.update.callback_query.from.id
   }
   
@@ -400,9 +412,9 @@ const actionProcessing = async function (ctx) {
     case `disablePersonalResult`:
       updatedData = (await player_settingsAPI.update(player_id, true, {enabled: false})).data[0]
       player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote !== '') {
-        if (player_vote.filled_all_polls === true) {
-          if (player_vote.personal_result_message_id !== null) {
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
+          if (player_vote.personal_result_message_id) {
             await player_voteAPI.update(player_id, {personal_result_message_id: null})
             await deleteMessage(player_id, player_vote.personal_result_message_id)
           }
@@ -415,8 +427,8 @@ const actionProcessing = async function (ctx) {
     case `enablePersonalResult`:
       updatedData = (await player_settingsAPI.update(player_id, true, {enabled: true})).data[0]
       player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote !== '') {
-        if (player_vote.filled_all_polls === true) {
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
           if (player_vote.personal_result_message_id === null) {
             await sendAllResultMessages(player_id, player_vote)
           }
@@ -467,9 +479,9 @@ const actionProcessing = async function (ctx) {
     case `disableFullResult`:
       updatedData = (await player_settingsAPI.update(player_id, false, {enabled: false})).data[0]
       player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote !== '') {
-        if (player_vote.filled_all_polls === true) {
-          if (player_vote.full_result_message_id !== null) {
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
+          if (player_vote.full_result_message_id) {
             await player_voteAPI.update(player_id, {full_result_message_id: null})
             await deleteMessage(player_id, player_vote.full_result_message_id)
           }
@@ -482,8 +494,8 @@ const actionProcessing = async function (ctx) {
     case `enableFullResult`:
       updatedData = (await player_settingsAPI.update(player_id, false, {enabled: true})).data[0]
       player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote !== '') {
-        if (player_vote.filled_all_polls === true) {
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
           if (player_vote.full_result_message_id === null) {
             await sendAllResultMessages(player_id, player_vote)
           }
@@ -558,13 +570,13 @@ const mailing = async function (hours, minutes, sender) {
   }
 
   if (sender.id !== admin) {
-    if (sender.username === undefined) {
+    if (!sender.username) {
       sender.username = ``
     }
-    if (sender.first_name === undefined) {
+    if (!sender.first_name) {
       sender.first_name = ``
     }
-    if (sender.last_name === undefined) {
+    if (!sender.last_name) {
       sender.last_name = ``
     }
     sendMessage(admin, `Инициатор опросов:\n<b>${sender.first_name} ${sender.last_name}\n${sender.username}</b>`)
@@ -583,11 +595,11 @@ const mailingFirstPoll = async function (message_id) {
 
 
 const createCheckPoll = async function (normal = true) {
-  if (normal === true) {
+  if (normal) {
     const result = await sendPoll(twinkByAdmin, texts.letsPlay.question, texts.letsPlay.answers, false)
     return result;
   }
-  if (normal === false) {
+  if (!normal) {
     const result = await sendPoll(twinkByAdmin, texts.letsPlayRightNow.question, texts.letsPlayRightNow.answers, false)
     return result;
   }
@@ -696,7 +708,7 @@ const createPersonalResult = async function (player_id, filledResult) {
   if (player_times.size === 0) {
     const ready_to_play = (await player_voteAPI.get(player_id)).data.ready_to_play
     // проверка, передумал ли игрок
-    if (ready_to_play === false) {
+    if (!ready_to_play) {
       return `cant_play`
     }
     // если некорректно заполнил опросы, например отменил время и/или игры, но поставил снова
@@ -713,7 +725,7 @@ const createPersonalResult = async function (player_id, filledResult) {
       actialTimes = true
     }
   });
-  if (actialTimes === false) {
+  if (!actialTimes) {
     return `no_time_left`
   }
 
@@ -745,7 +757,7 @@ const setResultToNormal = async function (resultObject, fullResult = true, playe
   let normalResult = ``
   const currentDate = new Date()
   const currentTime = ('0' + currentDate.getHours().toString()).slice(-2) + ':' + ('0' + currentDate.getMinutes().toString()).slice(-2);
-  if (fullResult === false) {
+  if (!fullResult) {
     normalResult += `<b>ПЕРСОНАЛЬНОЕ РАСПИСАНИЕ  🎯</b>\n<i>Обновлено в <b>${currentTime}</b></i>`
     // если результат является двумерным массивом, а не текстовым статусом
     if (typeof(resultObject) !== `string`) {
@@ -805,7 +817,7 @@ const setResultToNormal = async function (resultObject, fullResult = true, playe
       return normalResult
     }
   }
-  if (fullResult === true) {
+  if (fullResult) {
     normalResult += `<b>ОБЩЕЕ РАСПИСАНИЕ</b>\n<i>Обновлено в <b>${currentTime}</b></i>`
     for (let time_option = 0; time_option < resultObject.length; time_option++) {
       let currentHour = (end_time - time_option).toString()
@@ -852,13 +864,13 @@ const createTimeOptions = async function (forPoll = false) {
       time_options.push(option.toString() + `:00`)
     }
     if (hours === option) {
-      if (forPoll === false) {
+      if (!forPoll) {
         if (minutes <= 55) {
           time_options.push(option.toString() + `:00`)
           break
         }
       }
-      if (forPoll === true) {
+      if (forPoll) {
         if (minutes <= 30) {
           time_options.push(`${hh_mm} (момент создания опроса)`)
           break
@@ -883,7 +895,7 @@ const updateAllResultMessages = async function () {
     let player_settings = (await player_settingsAPI.get(player_info.player_id)).data
     try {
       // обновление и уведомление по Общему расписанию
-      if (player_settings[1].enabled === true) {
+      if (player_settings[1].enabled) {
 
         if (player_settings[1].before_reminder === -1) {
           await editMessage(player_info.player_id, normalFullResult, player_info.full_result_message_id)
@@ -908,7 +920,7 @@ const updateAllResultMessages = async function () {
       }
 
       // обновление и уведомление по Персональному расписанию
-      if (player_settings[0].enabled === true) {
+      if (player_settings[0].enabled) {
         let personalResult = await createPersonalResult(player_info.player_id, fullResult)
         let normalPersonalResult = await setResultToNormal(personalResult, false, player_info.player_id)
 
@@ -955,11 +967,11 @@ const sendAllResultMessages = async function (player_id, player_vote = undefined
   const fullResultSettings = playerSettings[1]
   const fullResult = await createFilledResult()
 
-  if (player_vote === undefined) {
+  if (!player_vote) {
     player_vote = (await player_voteAPI.get(player_id)).data
   }
 
-  if (fullResultSettings.enabled === true) {
+  if (fullResultSettings.enabled) {
     if (player_vote.full_result_message_id === null) {
       const normalFullResult = await setResultToNormal(fullResult, true)
       const messageFullResult = await sendMessage(player_id, normalFullResult)
@@ -968,7 +980,7 @@ const sendAllResultMessages = async function (player_id, player_vote = undefined
     }
   }
 
-  if (personalResultSettings.enabled === true) {
+  if (personalResultSettings.enabled) {
     if (player_vote.personal_result_message_id === null) {
       const personalResult = await createPersonalResult(player_id, fullResult)
       const normalPersonalResult = await setResultToNormal(personalResult, false, player_id)
@@ -992,7 +1004,7 @@ const answerProcessing = async function (ctx) {
   if (pollID === activePolls[0].poll_id) {
     if (options[0] === 0) {
       if (player_vote.polls_sent === 1) {
-        if (activePolls[1].poll_id !== null) {
+        if (activePolls[1].poll_id) {
           await forwardMessage(player, activePolls[1].message_id)
           return (await player_voteAPI.update(player, {polls_sent: 2, ready_to_play: true}))
         }
@@ -1037,12 +1049,12 @@ const answerProcessing = async function (ctx) {
   // третий опрос (время)
   if (pollID === activePolls[2].poll_id) {
     if (options.length > 0) {
-      if (player_vote.filled_all_polls === false) {
+      if (!player_vote.filled_all_polls) {
         await player_voteAPI.update(player, {filled_all_polls: true})
         await player_timeAPI.create(player, options)
         return (await sendAllResultMessages(player))
       }
-      if (player_vote.filled_all_polls === true) {
+      if (player_vote.filled_all_polls) {
         return (await player_timeAPI.create(player, options))
       }
     }
@@ -1077,11 +1089,11 @@ const privateStatus = async function (ctx) {
 
 
 const groupStatus = async function (ctx, status) {
-  if (status === true) {
+  if (status) {
     const user = ctx.update.message.new_chat_member.id
     //return console.log(`Пользователь ${user} вступил в группу`)
   }
-  if (status === false) {
+  if (!status) {
     const user = ctx.update.message.left_chat_participant.id
     //return console.log(`Пользователь ${user} покинул группу`)
   }
@@ -1110,11 +1122,11 @@ bot.action('delete', async (ctx) => {
 bot.command('assemble', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
-  if (created !== '') {
+  if (created) {
     const polls = (await pollsAPI.getAll()).data
     const sender = ctx.update.message.from
     
-    if (polls[0].message_id !== null) {
+    if (polls[0].message_id) {
       await sendMessage(sender.id, `На сегодня уже есть Активные опросы`)
       return await ctx.deleteMessage()
     }
@@ -1130,7 +1142,7 @@ bot.command('assemble', async (ctx) => {
 bot.command('invite', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
-  if (created !== '') {
+  if (created) {
     await sendMessage(player_id, `Ты можешь поделиться моим функционалом со своим другом.\nНиже ссылка на мой чат`)
     await sendMessage(player_id, `<b>https://t.me/deadly_party_bot</b>`)
     await sendMessage(player_id, `При первом запуске с новым пользователем мне нужно получить от него Твой код.\n\nЭтот код твоему другу потребуется отправить ко мне в чат.\n<b>Ниже в сообщении сам код (копируется автоматически при нажатии)</b>`)
@@ -1144,7 +1156,7 @@ bot.command('invite', async (ctx) => {
 bot.command('group', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
-  if (created !== '') {
+  if (created) {
     await ctx.replyWithHTML(texts.group, groupInvitationButtons)
     return await ctx.deleteMessage()
   }
@@ -1154,7 +1166,7 @@ bot.command('group', async (ctx) => {
 bot.command('settings', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
-  if (created !== '') {
+  if (created) {
     await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true))
     return await ctx.deleteMessage()
   }
@@ -1217,7 +1229,7 @@ dbServer()
 // проверка, есть ли активные опросы (при перезапуске программы). Если да, то возобновить обновление расписания
 setTimeout(async () => {
   const mainPollData = (await pollsAPI.get(1)).data.message_id;
-  if (mainPollData !== null) {
+  if (mainPollData) {
     return await enableResultUpdates()
   }
 }, 1500);
