@@ -68,8 +68,8 @@ const personalActions = [`disablePersonalResult`,
 `personal_30`,
 `personal_15`,
 `personal_5`,
-`showFullSettings`,
-`disablePersonalNotify`]
+`personal_-1`,
+`showFullSettings`]
 
 
 const fullActions = [`disableFullResult`,
@@ -78,32 +78,34 @@ const fullActions = [`disableFullResult`,
 `full_30`,
 `full_15`,
 `full_5`,
-`showPersonalSettings`, 
-`disableFullNotify`]
+`full_-1`,
+`showPersonalSettings`]
 
 
-const personalSettingsButtons = async function (ctx, updatedData = undefined) {
-  if (ctx.update.message !== undefined) {
-    player_id = ctx.update.message.from.id
+const settingsButtons = async function (ctx, personal = true, updatedData = undefined) {
+  let player_id;
+  if (!personal || ctx.update.callback_query) {
+      player_id = ctx.update.callback_query.from.id
   }
-  if (ctx.update.callback_query !== undefined){
-    player_id = ctx.update.callback_query.from.id
+  else {
+      player_id = ctx.update.message.from.id
+  }
+
+  let currentSettings;
+  if (updatedData) {
+    currentSettings = updatedData
   }
   
-  let currentSettings;
-  if (updatedData !== undefined) {
-    currentSettings = updatedData
-  }
-  if (updatedData === undefined) {
-    currentSettings = (await player_settingsAPI.get(player_id)).data[0]
+  if (!updatedData) {
+      if (personal) {
+          currentSettings = (await player_settingsAPI.get(player_id)).data[0]
+      }
+      else {
+          currentSettings = (await player_settingsAPI.get(player_id)).data[1]
+      }
   }
 
-  let mark1 = ''
-  let mark2 = ''
-  let mark3 = ''
-  let mark4 = ''
-  let mark5 = ''
-
+  let mark1 = '', mark2 = '', mark3 = '', mark4 = '', mark5 = ''
   switch (currentSettings.before_reminder) {
     case 45:
       mark1 = '🟢'
@@ -122,23 +124,46 @@ const personalSettingsButtons = async function (ctx, updatedData = undefined) {
       break;
   }
 
-  let enabled = currentSettings.enabled
-  let enabledNow = [Markup.button.callback(`📣 Показывать Персональное расписание 📣`, 'enablePersonalResult')]
-  let disabledNow = [Markup.button.callback(`🚫 Не показывать Персональное расписание 🚫`, 'disablePersonalResult')]
-  let enable_disable = ''
-  if (enabled === true) {
-    enable_disable = disabledNow
+  let show_settings = {
+      notification_text: ``,
+      notification_command: ``,
+      other_schedule_text: ``,
+      other_schedule_command: ``,
+      enable_disable_switch: ``
   }
-  if (enabled === false) {
-    enable_disable = enabledNow
+  if (personal) {
+      show_settings.notification_text = `Персональные уведомления`
+      show_settings.notification_command = `personal`
+      show_settings.other_schedule_text = `👉 Настроить Общее расписание 👈`
+      show_settings.other_schedule_command = 'showFullSettings'
+      if (currentSettings.enabled) {
+        show_settings.enable_disable_switch = [Markup.button.callback(`🚫 Не показывать Персональное расписание 🚫`, 'disablePersonalResult')]
+      }
+      if (!currentSettings.enabled) {
+        show_settings.enable_disable_switch = [Markup.button.callback(`📣 Показывать Персональное расписание 📣`, 'enablePersonalResult')]
+      }
   }
-
+  if (!personal) {
+      show_settings.notification_text = `Общие уведомления`
+      show_settings.notification_command = `full`
+      show_settings.other_schedule_text = `👉 Настроить Персональное расписание 👈`
+      show_settings.other_schedule_command = 'showPersonalSettings'
+      if (currentSettings.enabled) {
+        show_settings.enable_disable_switch = [Markup.button.callback(`🚫 Не показывать Общее расписание 🚫`, 'disableFullResult')]
+      }
+      if (!currentSettings.enabled) {
+        show_settings.enable_disable_switch = [Markup.button.callback(`📣 Показывать Общее расписание 📣`, 'enableFullResult')]
+      }
+  }    
+  
   let buttons = Markup.inlineKeyboard([
-      [Markup.button.callback(`45 минут ${mark1}`, 'personal_45'), Markup.button.callback(`30 минут ${mark2}`, 'personal_30')],
-      [Markup.button.callback(`15 минут ${mark3}`, 'personal_15'), Markup.button.callback(`5 минут ${mark4}`, 'personal_5')],
-      [Markup.button.callback(`Отключить Персональные уведомления ${mark5}`, 'disablePersonalNotify')],
-      enable_disable,
-      [Markup.button.callback('👉 Настроить Общее расписание 👈', 'showFullSettings')],
+      [Markup.button.callback(`45 минут ${mark1}`, `${show_settings.notification_command}_45`), 
+      Markup.button.callback(`30 минут ${mark2}`, `${show_settings.notification_command}_30`)],
+      [Markup.button.callback(`15 минут ${mark3}`, `${show_settings.notification_command}_15`), 
+      Markup.button.callback(`5 минут ${mark4}`, `${show_settings.notification_command}_5`)],
+      [Markup.button.callback(`Отключить ${show_settings.notification_text} ${mark5}`, `${show_settings.notification_command}_-1`)],
+      show_settings.enable_disable_switch,
+      [Markup.button.callback(show_settings.other_schedule_text, show_settings.other_schedule_command)],
       [Markup.button.callback('Скрыть окно настроек', 'delete')]
   ])
 
@@ -146,62 +171,6 @@ const personalSettingsButtons = async function (ctx, updatedData = undefined) {
 
 }
 
-const fullSettingsButtons = async function (ctx, updatedData = undefined) {
-  player_id = ctx.update.callback_query.from.id
-  let currentSettings;
-  if (updatedData !== undefined) {
-    currentSettings = updatedData
-  }
-  if (updatedData === undefined) {
-    currentSettings = (await player_settingsAPI.get(player_id)).data[1]
-  }
-
-  let mark1 = ''
-  let mark2 = ''
-  let mark3 = ''
-  let mark4 = ''
-  let mark5 = ''
-
-  switch (currentSettings.before_reminder) {
-    case 45:
-      mark1 = '🟢'
-      break;
-    case 30:
-      mark2 = '🟢'
-      break;
-    case 15:
-      mark3 = '🟢'
-      break;
-    case 5:
-      mark4 = '🟢'
-      break;
-    case -1:
-      mark5 = '🟢'
-      break;
-  }
-
-  let enabled = currentSettings.enabled
-  let enabledNow = [Markup.button.callback(`📣 Показывать Общее расписание 📣`, 'enableFullResult')]
-  let disabledNow = [Markup.button.callback(`🚫 Не показывать Общее расписание 🚫`, 'disableFullResult')]
-  let enable_disable = ''
-  if (enabled === true) {
-    enable_disable = disabledNow
-  }
-  if (enabled === false) {
-    enable_disable = enabledNow
-  }
-
-  let buttons = Markup.inlineKeyboard([
-      [Markup.button.callback(`45 минут ${mark1}`, 'full_45'), Markup.button.callback(`30 минут ${mark2}`, 'full_30')],
-      [Markup.button.callback(`15 минут ${mark3}`, 'full_15'), Markup.button.callback(`5 минут ${mark4}`, 'full_5')],
-      [Markup.button.callback(`Отключить Общие уведомления ${mark5}`, 'disableFullNotify')],
-      enable_disable,
-      [Markup.button.callback('👉 Настроить Персональное расписание 👈', 'showPersonalSettings')],
-      [Markup.button.callback('Скрыть окно настроек', 'delete')]
-  ])
-  return buttons
-
-}
 
 
 const testButton = Markup.inlineKeyboard([
@@ -393,7 +362,7 @@ const actionProcessing = async function (ctx) {
   switch (data) {
     // проверка, на какую кнопку из Персональных настроек было нажатие
     case `showFullSettings`:
-      createButtons = await fullSettingsButtons(ctx)
+      createButtons = await settingsButtons(ctx, false)
       await ctx.deleteMessage()
       await ctx.replyWithHTML(texts.forButtonFullReminder, createButtons)
       break;
@@ -401,31 +370,31 @@ const actionProcessing = async function (ctx) {
     case `personal_45`:
       updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 45})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;
 
     case `personal_30`:
       updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 30})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;
 
     case `personal_15`:
       updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 15})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;
 
     case `personal_5`:
       updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 5})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;
 
-    case `disablePersonalNotify`:
+    case `personal_-1`:
       updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: -1})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;
 
     case `disablePersonalResult`:
@@ -440,7 +409,7 @@ const actionProcessing = async function (ctx) {
         }
       }
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;
 
     case `enablePersonalResult`:
@@ -454,12 +423,12 @@ const actionProcessing = async function (ctx) {
         }
       }
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
       break;      
 
     // проверка, на какую кнопку из Общих настроек было нажатие
     case `showPersonalSettings`:
-      createButtons = await personalSettingsButtons(ctx)
+      createButtons = await settingsButtons(ctx, true)
       await ctx.deleteMessage()
       await ctx.replyWithHTML(texts.forButtonPersonalReminder, createButtons)
       await ctx.answerCbQuery()
@@ -468,31 +437,31 @@ const actionProcessing = async function (ctx) {
     case `full_45`:
       updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 45})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
 
     case `full_30`:
       updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 30})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
 
     case `full_15`:
       updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 15})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
 
     case `full_5`:
       updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 5})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
 
-    case `disableFullNotify`:
+    case `full_-1`:
       updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: -1})).data[0]
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
 
     case `disableFullResult`:
@@ -507,7 +476,7 @@ const actionProcessing = async function (ctx) {
         }
       }
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
 
     case `enableFullResult`:
@@ -521,7 +490,7 @@ const actionProcessing = async function (ctx) {
         }
       }
       await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await fullSettingsButtons(ctx, updatedData))
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
       break;
   }
 }
@@ -1186,7 +1155,7 @@ bot.command('settings', async (ctx) => {
   const player_id = (ctx.message.from.id).toString()
   const created = (await playersAPI.get(player_id)).data
   if (created !== '') {
-    await ctx.replyWithHTML(texts.forButtonPersonalReminder, await personalSettingsButtons(ctx))
+    await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true))
     return await ctx.deleteMessage()
   }
   await sendMessage(player_id, texts.sorry)  
