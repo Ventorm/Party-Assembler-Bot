@@ -183,6 +183,157 @@ const deleteButton = Markup.inlineKeyboard([
 ])
 
 
+const actionProcessing = async function (ctx) {
+  let player_id;
+  if (ctx.update.message) {
+    player_id = ctx.update.message.from.id
+  }
+  if (ctx.update.callback_query){
+    player_id = ctx.update.callback_query.from.id
+  }
+  
+  const data = ctx.update.callback_query.data
+  let createButtons; 
+  let updatedData;    
+  let player_vote;
+
+  switch (data) {
+    // проверка, на какую кнопку из Персональных настроек было нажатие
+    case `showFullSettings`:
+      createButtons = await settingsButtons(ctx, false)
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, createButtons)
+      break;
+
+    case `personal_45`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 45})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;
+
+    case `personal_30`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 30})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;
+
+    case `personal_15`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 15})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;
+
+    case `personal_5`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 5})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;
+
+    case `personal_-1`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: -1})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;
+
+    case `disablePersonalResult`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {enabled: false})).data[0]
+      player_vote = (await player_voteAPI.get(player_id)).data
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
+          if (player_vote.personal_result_message_id) {
+            await player_voteAPI.update(player_id, {personal_result_message_id: null})
+            await deleteMessage(player_id, player_vote.personal_result_message_id)
+          }
+        }
+      }
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;
+
+    case `enablePersonalResult`:
+      updatedData = (await player_settingsAPI.update(player_id, true, {enabled: true})).data[0]
+      player_vote = (await player_voteAPI.get(player_id)).data
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
+          if (player_vote.personal_result_message_id === null) {
+            await sendAllResultMessages(player_id, player_vote)
+          }
+        }
+      }
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
+      break;      
+
+    // проверка, на какую кнопку из Общих настроек было нажатие
+    case `showPersonalSettings`:
+      createButtons = await settingsButtons(ctx, true)
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, createButtons)
+      await ctx.answerCbQuery()
+      break;
+
+    case `full_45`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 45})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+
+    case `full_30`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 30})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+
+    case `full_15`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 15})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+
+    case `full_5`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 5})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+
+    case `full_-1`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: -1})).data[0]
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+
+    case `disableFullResult`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {enabled: false})).data[0]
+      player_vote = (await player_voteAPI.get(player_id)).data
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
+          if (player_vote.full_result_message_id) {
+            await player_voteAPI.update(player_id, {full_result_message_id: null})
+            await deleteMessage(player_id, player_vote.full_result_message_id)
+          }
+        }
+      }
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+
+    case `enableFullResult`:
+      updatedData = (await player_settingsAPI.update(player_id, false, {enabled: true})).data[0]
+      player_vote = (await player_voteAPI.get(player_id)).data
+      if (player_vote) {
+        if (player_vote.filled_all_polls) {
+          if (player_vote.full_result_message_id === null) {
+            await sendAllResultMessages(player_id, player_vote)
+          }
+        }
+      }
+      await ctx.deleteMessage()
+      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
+      break;
+  }
+}
+
+
 const sendQuiz = async function (chat_id, question, options, correct_option_id = 0, explanation = '', anonymous = false, type = 'quiz', method = 'sendPoll') {
   question = encodeURIComponent(question)
   options = encodeURIComponent(JSON.stringify(options))
@@ -358,156 +509,6 @@ const textProcessing = async function (ctx) {
 }
 
 
-const actionProcessing = async function (ctx) {
-  if (ctx.update.message) {
-    player_id = ctx.update.message.from.id
-  }
-  if (ctx.update.callback_query){
-    player_id = ctx.update.callback_query.from.id
-  }
-  
-  const data = ctx.update.callback_query.data
-  let createButtons; 
-  let updatedData;    
-  let player_vote;
-
-  switch (data) {
-    // проверка, на какую кнопку из Персональных настроек было нажатие
-    case `showFullSettings`:
-      createButtons = await settingsButtons(ctx, false)
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, createButtons)
-      break;
-
-    case `personal_45`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 45})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;
-
-    case `personal_30`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 30})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;
-
-    case `personal_15`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 15})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;
-
-    case `personal_5`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: 5})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;
-
-    case `personal_-1`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {before_reminder: -1})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;
-
-    case `disablePersonalResult`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {enabled: false})).data[0]
-      player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote) {
-        if (player_vote.filled_all_polls) {
-          if (player_vote.personal_result_message_id) {
-            await player_voteAPI.update(player_id, {personal_result_message_id: null})
-            await deleteMessage(player_id, player_vote.personal_result_message_id)
-          }
-        }
-      }
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;
-
-    case `enablePersonalResult`:
-      updatedData = (await player_settingsAPI.update(player_id, true, {enabled: true})).data[0]
-      player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote) {
-        if (player_vote.filled_all_polls) {
-          if (player_vote.personal_result_message_id === null) {
-            await sendAllResultMessages(player_id, player_vote)
-          }
-        }
-      }
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, await settingsButtons(ctx, true, updatedData))
-      break;      
-
-    // проверка, на какую кнопку из Общих настроек было нажатие
-    case `showPersonalSettings`:
-      createButtons = await settingsButtons(ctx, true)
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, createButtons)
-      await ctx.answerCbQuery()
-      break;
-
-    case `full_45`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 45})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-
-    case `full_30`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 30})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-
-    case `full_15`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 15})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-
-    case `full_5`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: 5})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-
-    case `full_-1`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {before_reminder: -1})).data[0]
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-
-    case `disableFullResult`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {enabled: false})).data[0]
-      player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote) {
-        if (player_vote.filled_all_polls) {
-          if (player_vote.full_result_message_id) {
-            await player_voteAPI.update(player_id, {full_result_message_id: null})
-            await deleteMessage(player_id, player_vote.full_result_message_id)
-          }
-        }
-      }
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-
-    case `enableFullResult`:
-      updatedData = (await player_settingsAPI.update(player_id, false, {enabled: true})).data[0]
-      player_vote = (await player_voteAPI.get(player_id)).data
-      if (player_vote) {
-        if (player_vote.filled_all_polls) {
-          if (player_vote.full_result_message_id === null) {
-            await sendAllResultMessages(player_id, player_vote)
-          }
-        }
-      }
-      await ctx.deleteMessage()
-      await ctx.replyWithHTML(texts.forButtonFullReminder, await settingsButtons(ctx, false, updatedData))
-      break;
-  }
-}
-
-
 const pollsCreatedToday = async function() {
   //берём дату создания последнего опроса (игры)
   const currentDate = new Date();
@@ -631,7 +632,7 @@ const enableResultUpdates = async function () {
     const now = new Date();
     const hours = now.getHours()
     const minutes = now.getMinutes()
-    if (hours === end_time + 1 || (hours === end_time && minutes === 30)) {
+    if (hours === end_time + 1 || (hours === end_time && minutes >= 30)) {
       await stopPolls()
       return await schedule.gracefulShutdown();
     }    
@@ -1261,6 +1262,7 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
 const devFun = async function(id) {
   setTimeout(async () => {
+    //await stopPolls()
     //sendMessage(admin, 123, deleteButton)
     //console.log(await sendMessage(admin, 123, testButton))
     //console.log(await editMessage(admin, 321, 3752, deleteButton))

@@ -23,10 +23,10 @@ class Player_settingsController {
         const player_id = req.params.id;
         let multiQuery = '';
 
-        if (enabled) {
+        if (typeof(enabled) === `boolean`) {
             multiQuery += (`Update player_settings SET enabled = ${enabled} WHERE (player_id = ${player_id} AND is_personal_result = ${is_personal_result}) RETURNING *;`)
         }
-        if (before_reminder) {
+        if (typeof(before_reminder) === `number`) {
             // 45, 30, 15, 5, -1
             multiQuery += `Update player_settings SET before_reminder = ${before_reminder} WHERE (player_id = ${player_id} AND is_personal_result = ${is_personal_result}) RETURNING *;`
         }

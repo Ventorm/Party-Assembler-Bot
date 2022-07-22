@@ -16,9 +16,7 @@ class player_voteAPI {
     }
 
     //for update player's options
-    //async update(player_id, polls_sent = undefined, ready_to_play = undefined, result_message_id = undefined) {
     async update(player_id, values = {}) {
-        //const receivedPut = await axios.put(`${httpDB}/player_vote/${player_id}`, {polls_sent, ready_to_play, result_message_id})
         const receivedPut = await axios.put(`${httpDB}/player_vote/${player_id}`, values)
         return receivedPut
     }

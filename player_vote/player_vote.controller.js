@@ -3,7 +3,6 @@ const db = require('../db')
 
 class Player_voteController {
     async getAllPlayer_vote(req, res) {
-        //const player_vote = await db.query('SELECT * FROM player_vote WHERE ready_to_play = true')
         const player_vote = await db.query('SELECT * FROM player_vote WHERE filled_all_polls = true')
 
         return res.json(player_vote.rows)
@@ -19,26 +18,26 @@ class Player_voteController {
     async updatePlayer_vote(req, res) {
         const player_id = req.params.id;
         const {
-            polls_sent, 
+            filled_all_polls,
             ready_to_play, 
-            filled_all_polls, 
+            polls_sent, 
             full_result_message_id, 
             personal_result_message_id} = req.body
 
         let multiQuery = '';
-        if (polls_sent) {
-            multiQuery += (`Update player_vote SET polls_sent = ${polls_sent} WHERE player_id = ${player_id};`)
-        }
-        if (ready_to_play) {
-            multiQuery += (`Update player_vote SET ready_to_play = ${ready_to_play} WHERE player_id = ${player_id};`)
-        }
-        if (filled_all_polls) {
+        if (filled_all_polls === true) {
             multiQuery += (`Update player_vote SET filled_all_polls = true WHERE player_id = ${player_id};`)
         }
-        if (full_result_message_id) {
+        if (typeof(ready_to_play) === `boolean`) {
+            multiQuery += (`Update player_vote SET ready_to_play = ${ready_to_play} WHERE player_id = ${player_id};`)
+        }
+        if (typeof(polls_sent) === `number`) {
+            multiQuery += (`Update player_vote SET polls_sent = ${polls_sent} WHERE player_id = ${player_id};`)
+        }
+        if (typeof(full_result_message_id) === `number` || full_result_message_id === null) {
             multiQuery += (`Update player_vote SET full_result_message_id = ${full_result_message_id} WHERE player_id = ${player_id};`)
         }
-        if (personal_result_message_id) {
+        if (typeof(personal_result_message_id) === `number` || personal_result_message_id === null) {
             multiQuery += (`Update player_vote SET personal_result_message_id = ${personal_result_message_id} WHERE player_id = ${player_id};`)
         }
 
