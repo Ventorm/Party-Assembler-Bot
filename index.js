@@ -1,9 +1,15 @@
 const express = require("express");
 const { default: axios } = require("axios");
-const { Telegraf, Markup } = require("telegraf");
+const { Telegraf } = require("telegraf");
 const schedule = require("node-schedule");
 
 const { texts } = require("./texts");
+const {
+  buttons,
+  settingsButtons,
+  personalActions,
+  fullActions,
+} = require("./buttons");
 const {
   PORT,
   token,
@@ -68,190 +74,6 @@ const addToMailing = async function (user_id) {
   }
 };
 
-const groupInvitationButtons = Markup.inlineKeyboard([
-  [
-    Markup.button.url(
-      "👉 Перейти в группу 👈",
-      "https://t.me/+AoRKG2Wb3_Y2MTBi"
-    ),
-  ],
-]);
-
-const temporaryStopNotifications = Markup.inlineKeyboard([
-  [
-    Markup.button.url(
-      "Не уведомлять сегодня",
-      "https://t.me/+AoRKG2Wb3_Y2MTBi"
-    ),
-  ],
-]);
-
-const personalActions = [
-  `disablePersonalResult`,
-  `enablePersonalResult`,
-  `personal_45`,
-  `personal_30`,
-  `personal_15`,
-  `personal_5`,
-  `personal_-1`,
-  `showFullSettings`,
-];
-
-const fullActions = [
-  `disableFullResult`,
-  `enableFullResult`,
-  `full_45`,
-  `full_30`,
-  `full_15`,
-  `full_5`,
-  `full_-1`,
-  `showPersonalSettings`,
-];
-
-const settingsButtons = async function (ctx, personal = true, updatedData) {
-  let player_id;
-  if (!personal || ctx.update.callback_query) {
-    player_id = ctx.update.callback_query.from.id;
-  } else {
-    player_id = ctx.update.message.from.id;
-  }
-
-  let currentSettings;
-  if (updatedData) {
-    currentSettings = updatedData;
-  }
-
-  if (!updatedData) {
-    if (personal) {
-      currentSettings = (await player_settingsAPI.get(player_id)).data[0];
-    } else {
-      currentSettings = (await player_settingsAPI.get(player_id)).data[1];
-    }
-  }
-
-  let mark1 = "",
-    mark2 = "",
-    mark3 = "",
-    mark4 = "",
-    mark5 = "";
-  switch (currentSettings.before_reminder) {
-    case 45:
-      mark1 = "🟢";
-      break;
-    case 30:
-      mark2 = "🟢";
-      break;
-    case 15:
-      mark3 = "🟢";
-      break;
-    case 5:
-      mark4 = "🟢";
-      break;
-    case -1:
-      mark5 = "🟢";
-      break;
-  }
-
-  let show_settings = {
-    notification_text: ``,
-    notification_command: ``,
-    other_schedule_text: ``,
-    other_schedule_command: ``,
-    enable_disable_switch: ``,
-  };
-  if (personal) {
-    show_settings.notification_text = `Персональные уведомления`;
-    show_settings.notification_command = `personal`;
-    show_settings.other_schedule_text = `👉 Настроить Общее расписание 👈`;
-    show_settings.other_schedule_command = "showFullSettings";
-    if (currentSettings.enabled) {
-      show_settings.enable_disable_switch = [
-        Markup.button.callback(
-          `🚫 Не показывать Персональное расписание 🚫`,
-          "disablePersonalResult"
-        ),
-      ];
-    }
-    if (!currentSettings.enabled) {
-      show_settings.enable_disable_switch = [
-        Markup.button.callback(
-          `📣 Показывать Персональное расписание 📣`,
-          "enablePersonalResult"
-        ),
-      ];
-    }
-  }
-  if (!personal) {
-    show_settings.notification_text = `Общие уведомления`;
-    show_settings.notification_command = `full`;
-    show_settings.other_schedule_text = `👉 Настроить Персональное расписание 👈`;
-    show_settings.other_schedule_command = "showPersonalSettings";
-    if (currentSettings.enabled) {
-      show_settings.enable_disable_switch = [
-        Markup.button.callback(
-          `🚫 Не показывать Общее расписание 🚫`,
-          "disableFullResult"
-        ),
-      ];
-    }
-    if (!currentSettings.enabled) {
-      show_settings.enable_disable_switch = [
-        Markup.button.callback(
-          `📣 Показывать Общее расписание 📣`,
-          "enableFullResult"
-        ),
-      ];
-    }
-  }
-
-  let buttons = Markup.inlineKeyboard([
-    [
-      Markup.button.callback(
-        `45 минут ${mark1}`,
-        `${show_settings.notification_command}_45`
-      ),
-      Markup.button.callback(
-        `30 минут ${mark2}`,
-        `${show_settings.notification_command}_30`
-      ),
-    ],
-    [
-      Markup.button.callback(
-        `15 минут ${mark3}`,
-        `${show_settings.notification_command}_15`
-      ),
-      Markup.button.callback(
-        `5 минут ${mark4}`,
-        `${show_settings.notification_command}_5`
-      ),
-    ],
-    [
-      Markup.button.callback(
-        `Отключить ${show_settings.notification_text} ${mark5}`,
-        `${show_settings.notification_command}_-1`
-      ),
-    ],
-    show_settings.enable_disable_switch,
-    [
-      Markup.button.callback(
-        show_settings.other_schedule_text,
-        show_settings.other_schedule_command
-      ),
-    ],
-    [Markup.button.callback("Скрыть окно настроек", "delete")],
-  ]);
-
-  return buttons;
-};
-
-const testButton = Markup.inlineKeyboard([
-  [Markup.button.url("Hello there", "https://t.me/+AoRKG2Wb3_Y2MTBi")],
-]);
-
-const deleteButton = Markup.inlineKeyboard([
-  [Markup.button.callback("Скрыть сообщение  🗑", "delete")],
-]);
-
 const actionProcessing = async function (ctx) {
   let player_id;
   if (ctx.update.message) {
@@ -262,16 +84,16 @@ const actionProcessing = async function (ctx) {
   }
 
   const data = ctx.update.callback_query.data;
-  let createButtons;
+  let createdButtons;
   let updatedData;
   let player_vote;
 
   switch (data) {
     // проверка, на какую кнопку из Персональных настроек было нажатие
     case `showFullSettings`:
-      createButtons = await settingsButtons(ctx, false);
+      createdButtons = await settingsButtons(ctx, false);
       await ctx.deleteMessage();
-      await ctx.replyWithHTML(texts.forButtonFullReminder, createButtons);
+      await ctx.replyWithHTML(texts.forButtonFullReminder, createdButtons);
       break;
 
     case `personal_45`:
@@ -383,9 +205,9 @@ const actionProcessing = async function (ctx) {
 
     // проверка, на какую кнопку из Общих настроек было нажатие
     case `showPersonalSettings`:
-      createButtons = await settingsButtons(ctx, true);
+      createdButtons = await settingsButtons(ctx, true);
       await ctx.deleteMessage();
-      await ctx.replyWithHTML(texts.forButtonPersonalReminder, createButtons);
+      await ctx.replyWithHTML(texts.forButtonPersonalReminder, createdButtons);
       await ctx.answerCbQuery();
       break;
 
@@ -569,7 +391,7 @@ const createCurrentTimeStamp = function () {
 const sendMessage = async function (
   chat_id,
   content,
-  buttons = false,
+  pinnedButtons = false,
   parse_mode = "HTML"
 ) {
   const method = "sendMessage";
@@ -577,9 +399,9 @@ const sendMessage = async function (
   content = encodeURIComponent(content);
   let url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&${type}=${content}&parse_mode=${parse_mode}`;
 
-  if (buttons) {
+  if (pinnedButtons) {
     url += `&reply_markup=${encodeURIComponent(
-      JSON.stringify(buttons.reply_markup)
+      JSON.stringify(pinnedButtons.reply_markup)
     )}`;
   }
 
@@ -595,16 +417,16 @@ const editMessage = async function (
   chat_id,
   newText = "",
   message_id,
-  buttons = false,
+  pinnedButtons = false,
   parse_mode = "HTML"
 ) {
   const method = "editMessageText";
   newText = encodeURIComponent(newText);
   let url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}&text=${newText}&parse_mode=${parse_mode}`;
 
-  if (buttons) {
+  if (pinnedButtons) {
     url += `&reply_markup=${encodeURIComponent(
-      JSON.stringify(buttons.reply_markup)
+      JSON.stringify(pinnedButtons.reply_markup)
     )}`;
   }
 
@@ -692,7 +514,7 @@ const textProcessing = async function (ctx) {
           await newPlayer(ctx, referal);
           await sendMessage(sender.id, texts.allowed);
           setTimeout(async () => {
-            await ctx.reply(texts.shortInfo, groupInvitationButtons);
+            await ctx.reply(texts.shortInfo, buttons.groupInvitation);
           }, 1500);
           setTimeout(async () => {
             await addToMailing(sender.id);
@@ -1367,7 +1189,7 @@ const privateStatus = async function (ctx) {
     // если с момента создания прошло больше 30 минут (привели время выше к минутам)
     if (dataComparsion > 30) {
       await playersAPI.update(user_id, true);
-      const result = await ctx.reply(texts.welcomeBack, groupInvitationButtons);
+      const result = await ctx.reply(texts.welcomeBack, buttons.groupInvitation);
     }
     // если пользователь разблокировал бота, но опросы сегодня ему ещё не были отправлены
     const player_vote = (await player_voteAPI.get(user_id)).data;
@@ -1439,7 +1261,7 @@ bot.command("group", async (ctx) => {
   const player_id = ctx.message.from.id.toString();
   const created = (await playersAPI.get(player_id)).data;
   if (created) {
-    await ctx.replyWithHTML(texts.group, groupInvitationButtons);
+    await ctx.replyWithHTML(texts.group, buttons.groupInvitation);
     return await ctx.deleteMessage();
   }
   await sendMessage(player_id, texts.sorry);
@@ -1535,7 +1357,7 @@ process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
 const devFun = async function () {
   setTimeout(async () => {
-    //await sendMessage(admin, 123, temporaryStopNotifications)
+    //await sendMessage(admin, 123, buttons.deleteThisMessage)
     //await stopPolls()
     //!!!ниже рассылка по !Всем активным пользователям
     //((await playersAPI.getAll(true)).data).forEach(user => sendMessage(user.id, texts.forAllInfoMessage));
