@@ -1,16 +1,16 @@
 const { default: axios } = require("axios");
-const { httpDB } = require("../const.data.js");
+const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
 
 class gamesAPI {
   //get names by all games
   async getAll() {
-    const receivedGet = await axios.get(`${httpDB}/games`);
+    const receivedGet = await axios.get(`${httpDB}:${PORT}/games`);
     return receivedGet;
   }
 
   //get game params by game id
   async get(id) {
-    const receivedGet = await axios.get(`${httpDB}/games/${id}`);
+    const receivedGet = await axios.get(`${httpDB}:${PORT}/games/${id}`);
     return receivedGet;
   }
 }
