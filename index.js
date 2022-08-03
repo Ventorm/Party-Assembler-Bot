@@ -3,25 +3,6 @@ const { default: axios } = require("axios");
 const { Telegraf } = require("telegraf");
 const schedule = require("node-schedule");
 
-const { texts } = require("./texts");
-const {
-  buttons,
-  settingsButtons,
-  personalActions,
-  fullActions,
-} = require("./buttons");
-const {
-  PORT,
-  token,
-  end_time,
-  admin,
-  twinkByAdmin,
-  //before_reminder,
-  //httpDB,
-  //mainGroup,
-  //adminHelper,
-  //botID,
-} = require("./const.data.js");
 const playersAPI = require("./players/players.API.js");
 const gamesAPI = require("./games/games.API.js");
 const pollsAPI = require("./polls/polls.API.js");
@@ -30,7 +11,18 @@ const player_gameAPI = require("./player_game/player_game.API.js");
 const player_voteAPI = require("./player_vote/player_vote.API.js");
 const player_settingsAPI = require("./player_settings/player_settings.API.js");
 
-const bot = new Telegraf(token);
+const { texts } = require("./texts");
+const {
+  buttons,
+  settingsButtons,
+  personalActions,
+  fullActions,
+} = require("./buttons");
+
+const { PORT, bot_token, end_time, admin, twinkByAdmin } =
+  require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+
+const bot = new Telegraf(bot_token);
 
 //#region Functions
 const getStarted = async function (ctx) {
@@ -332,7 +324,7 @@ const sendQuiz = async function (
   question = encodeURIComponent(question);
   options = encodeURIComponent(JSON.stringify(options));
   explanation = encodeURIComponent(explanation);
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&question=${question}&options=${options}&is_anonymous=${anonymous}&type=${type}&correct_option_id=${correct_option_id}&explanation=${explanation}`;
+  const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&question=${question}&options=${options}&is_anonymous=${anonymous}&type=${type}&correct_option_id=${correct_option_id}&explanation=${explanation}`;
 
   const result = (await axios.post(url)).data.result.message_id;
 };
@@ -348,7 +340,7 @@ const sendPoll = async function (
 ) {
   question = encodeURIComponent(question);
   options = encodeURIComponent(JSON.stringify(options));
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&question=${question}&options=${options}&is_anonymous=${anonymous}&allows_multiple_answers=${multiple_answers}&type=${type}`;
+  const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&question=${question}&options=${options}&is_anonymous=${anonymous}&allows_multiple_answers=${multiple_answers}&type=${type}`;
 
   try {
     const result = (await axios.post(url)).data.result;
@@ -363,7 +355,7 @@ const stopPolls = async function () {
   const polls = (await pollsAPI.getAll()).data;
   polls.forEach(async (poll) => {
     if (poll.message_id) {
-      const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${twinkByAdmin}&message_id=${poll.message_id}`;
+      const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${twinkByAdmin}&message_id=${poll.message_id}`;
       try {
         const result = (await axios.get(url)).data.result;
       } catch (error) {
@@ -397,7 +389,7 @@ const sendMessage = async function (
   const method = "sendMessage";
   const type = "text";
   content = encodeURIComponent(content);
-  let url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&${type}=${content}&parse_mode=${parse_mode}`;
+  let url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&${type}=${content}&parse_mode=${parse_mode}`;
 
   if (pinnedButtons) {
     url += `&reply_markup=${encodeURIComponent(
@@ -422,7 +414,7 @@ const editMessage = async function (
 ) {
   const method = "editMessageText";
   newText = encodeURIComponent(newText);
-  let url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}&text=${newText}&parse_mode=${parse_mode}`;
+  let url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&message_id=${message_id}&text=${newText}&parse_mode=${parse_mode}`;
 
   if (pinnedButtons) {
     url += `&reply_markup=${encodeURIComponent(
@@ -443,7 +435,7 @@ const forwardMessage = async function (
   message_id,
   method = "forwardMessage"
 ) {
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&from_chat_id=${twinkByAdmin}&message_id=${message_id}`;
+  const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&from_chat_id=${twinkByAdmin}&message_id=${message_id}`;
 
   try {
     const result = (await axios.post(url)).data.result.message_id;
@@ -458,7 +450,7 @@ const deleteMessage = async function (
   message_id,
   method = "deleteMessage"
 ) {
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}`;
+  const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&message_id=${message_id}`;
 
   try {
     const result = (await axios.post(url)).data;
@@ -474,7 +466,7 @@ const pinMessage = async function (
   disable_notification = true,
   method = "pinChatMessage"
 ) {
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}&disable_notification=${disable_notification}`;
+  const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&message_id=${message_id}&disable_notification=${disable_notification}`;
   //const result = (await axios.post(url)).data.result.message_id
   try {
     const result = (await axios.post(url)).data;
@@ -489,7 +481,7 @@ const unpinMessage = async function (
   message_id,
   method = "unpinChatMessage"
 ) {
-  const url = `https://api.telegram.org/bot${token}/${method}?chat_id=${chat_id}&message_id=${message_id}`;
+  const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${chat_id}&message_id=${message_id}`;
   //const result = (await axios.post(url)).data.result.message_id
   try {
     const result = (await axios.post(url)).data;
@@ -1189,7 +1181,10 @@ const privateStatus = async function (ctx) {
     // если с момента создания прошло больше 30 минут (привели время выше к минутам)
     if (dataComparsion > 30) {
       await playersAPI.update(user_id, true);
-      const result = await ctx.reply(texts.welcomeBack, buttons.groupInvitation);
+      const result = await ctx.reply(
+        texts.welcomeBack,
+        buttons.groupInvitation
+      );
     }
     // если пользователь разблокировал бота, но опросы сегодня ему ещё не были отправлены
     const player_vote = (await player_voteAPI.get(user_id)).data;
@@ -1324,6 +1319,7 @@ app.use("/", player_settingsRouter);
 const dbServer = function () {
   try {
     app.listen(PORT, console.log(`Server DB is started on port ${PORT}`));
+    //app.listen(PORT, console.log(`Server DB is started on port ${PORT}`));
   } catch (error) {
     console.log(error);
     console.log("DB could not start, all Error at the Top");
