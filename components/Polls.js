@@ -2,7 +2,7 @@ const { default: axios } = require("axios");
 const bot_token = require("dotenv").config().parsed.bot_token;
 
 class Polls {
-  async sendPoll(
+  async send(
     chat_id,
     question,
     options,

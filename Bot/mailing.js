@@ -556,7 +556,7 @@ const mailingFirstPoll = async function (message_id) {
 
 const createCheckPoll = async function (normal = true) {
   if (normal) {
-    const result = await Polls.sendPoll(
+    const result = await Polls.send(
       twinkByAdmin,
       texts.letsPlay.question,
       texts.letsPlay.answers,
@@ -565,7 +565,7 @@ const createCheckPoll = async function (normal = true) {
     return result;
   }
   if (!normal) {
-    const result = await Polls.sendPoll(
+    const result = await Polls.send(
       twinkByAdmin,
       texts.letsPlayRightNow.question,
       texts.letsPlayRightNow.answers,
@@ -578,7 +578,7 @@ const createCheckPoll = async function (normal = true) {
 const createTimePoll = async function () {
   const time_options = await createTimeOptions(true);
 
-  const result = await Polls.sendPoll(
+  const result = await Polls.send(
     twinkByAdmin,
     texts.chooseTime,
     time_options
@@ -593,7 +593,7 @@ const createGamePoll = async function () {
     games.push(game.name);
   });
 
-  const result = await Polls.sendPoll(twinkByAdmin, texts.chooseGame, games);
+  const result = await Polls.send(twinkByAdmin, texts.chooseGame, games);
   return result;
 };
 
