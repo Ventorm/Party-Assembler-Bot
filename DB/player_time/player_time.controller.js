@@ -1,5 +1,4 @@
-const db = require("../db");
-//const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+const db = require("../db_pool");
 const env_vars = require("dotenv").config().parsed;
 const end_time = parseInt(env_vars.end_time);
 

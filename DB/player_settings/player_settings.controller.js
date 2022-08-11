@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../db_pool");
 
 class Player_settingsController {
   async getAllPlayer_settings(req, res) {
