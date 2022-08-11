@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
-const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+//const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+const { httpDB, PORT } = require("dotenv").config().parsed;
 
 class player_settingsAPI {
   //get all id from player_settings, where bot is enabled

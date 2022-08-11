@@ -1,5 +1,7 @@
 const db = require("../db");
-const { end_time } = require("../const.data");
+//const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+const env_vars = require("dotenv").config().parsed;
+const end_time = parseInt(env_vars.end_time);
 
 class Player_timeController {
   async getAllPlayer_time(req, res) {

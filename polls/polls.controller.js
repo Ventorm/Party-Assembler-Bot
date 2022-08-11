@@ -39,7 +39,7 @@ class PollsController {
     const todayTimestamp = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 
     const polls = await db.query(
-      `update polls SET poll_id = ${poll_id}, message_id = ${message_id}, was_created = ${todayTimestamp} WHERE order_id = ${order_id}`
+      `update polls SET poll_id = ${poll_id}, message_id = ${message_id}, was_created = '${todayTimestamp}' WHERE order_id = ${order_id}`
     );
 
     return res.json(polls.rows[0]);

@@ -1,5 +1,6 @@
 const { default: axios } = require("axios");
-const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+//const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+const { httpDB, PORT } = require("dotenv").config().parsed;
 
 class player_timeAPI {
   //get all records player + time for analytics

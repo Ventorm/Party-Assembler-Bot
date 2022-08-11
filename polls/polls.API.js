@@ -1,5 +1,7 @@
 const { default: axios } = require("axios");
-const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+//const { httpDB, PORT } = require("dotenv").config({ path: "Vote_Bot/.env" }).parsed;
+const { httpDB, PORT } = require("dotenv").config().parsed;
+
 
 class pollsAPI {
   //get all polls for checking poll's answers
