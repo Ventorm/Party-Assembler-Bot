@@ -578,11 +578,7 @@ const createCheckPoll = async function (normal = true) {
 const createTimePoll = async function () {
   const time_options = await createTimeOptions(true);
 
-  const result = await Polls.send(
-    twinkByAdmin,
-    texts.chooseTime,
-    time_options
-  );
+  const result = await Polls.send(twinkByAdmin, texts.chooseTime, time_options);
   return result;
 };
 

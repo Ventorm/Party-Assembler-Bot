@@ -3,7 +3,7 @@ const Polls = require("../components/Polls.js");
 const { admin } = require("dotenv").config().parsed;
 const { texts } = require("./texts");
 const { buttons } = require("./buttons");
-const { sendAllResultMessages } = require("./mailing")
+const { sendAllResultMessages } = require("./mailing");
 
 const {
   playersAPI,
@@ -11,7 +11,7 @@ const {
   player_timeAPI,
   player_gameAPI,
   player_voteAPI,
-  player_settingsAPI
+  player_settingsAPI,
 } = require("../DB/db_API");
 
 const getStarted = async function (ctx) {

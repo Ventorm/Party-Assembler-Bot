@@ -1,4 +1,4 @@
-const { bot } = require("./live_catch")
+const { bot } = require("./live_catch");
 
 //Bot launch
 

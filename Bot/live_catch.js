@@ -2,7 +2,7 @@ const { Telegraf } = require("telegraf");
 const { bot_token } = require("dotenv").config().parsed;
 const { playersAPI, pollsAPI } = require("../DB/db_API");
 const { texts } = require("./texts");
-const { beforeMailing } = require("./mailing.js")
+const { beforeMailing } = require("./mailing.js");
 const Messages = require("../components/Messages.js");
 const Polls = require("../components/Polls");
 
@@ -21,8 +21,6 @@ const {
   privateStatus,
   groupStatus,
 } = require("./functions");
-
-
 
 const bot = new Telegraf(bot_token);
 
