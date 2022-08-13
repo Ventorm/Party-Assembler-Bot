@@ -17,8 +17,6 @@ const {
   player_settingsAPI,
 } = require("./DB/db_API");
 
-//#region Launch Servers
-
 //Launch Servers
 db_server();
 bot_server();
@@ -31,12 +29,10 @@ setTimeout(async () => {
   }
 }, 1500);
 
-//#endregion
-
 //#region DevRegion
-
 const devFun = async function () {
   setTimeout(async () => {
+    //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
     //await Messages.send(admin, 123, buttons.deleteThisMessage)
     //await Polls.stopAllPolls()

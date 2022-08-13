@@ -1,4 +1,11 @@
+const {
+  pollsAPI,
+  player_gameAPI,
+  player_voteAPI,
+  player_timeAPI,
+} = require("../DB/db_API");
 const { default: axios } = require("axios");
+const { twinkByAdmin } = require("dotenv").config().parsed;
 const bot_token = require("dotenv").config().parsed.bot_token;
 
 class Polls {

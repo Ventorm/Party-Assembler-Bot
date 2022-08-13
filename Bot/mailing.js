@@ -586,7 +586,11 @@ const createGamePoll = async function () {
   const allGames = (await gamesAPI.getAll()).data;
   let games = [];
   allGames.forEach((game) => {
-    games.push(game.name);
+    let game_info = ''
+    game_info += game.icon
+    game_info += '  '
+    game_info += game.name
+    games.push(game_info);
   });
 
   const result = await Polls.send(twinkByAdmin, texts.chooseGame, games);
