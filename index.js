@@ -3,7 +3,7 @@ const Polls = require("./components/Polls.js");
 const { enableResultUpdates } = require("./Bot/mailing");
 const { db_server } = require("./DB/server.js");
 const { bot_server } = require("./Bot/server.js");
-const { admin } = require("dotenv").config().parsed;
+const { admin, twinkByAdmin, adminHelper } = require("dotenv").config().parsed;
 const { texts } = require("./Bot/texts.js");
 const { buttons } = require("./Bot/buttons.js");
 
@@ -37,7 +37,7 @@ const devFun = async function () {
     //await Messages.send(admin, 123, buttons.deleteThisMessage)
     //await Polls.stopAllPolls()
     //!!!ниже рассылка по !Всем активным пользователям
-    //((await playersAPI.getAll(true)).data).forEach(user => Messages.send(user.id, texts.forAllInfoMessage));
+    //(await playersAPI.getAll(true)).data.forEach((user) => {if (user.enabled) {await Messages.send(user.id, texts.forAllInfoMessage)}});
   }, 500);
 };
 devFun();

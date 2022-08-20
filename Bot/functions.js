@@ -1,9 +1,10 @@
 const Messages = require("../components/Messages.js");
 const Polls = require("../components/Polls.js");
-const { admin } = require("dotenv").config().parsed;
+const { admin, twinkByAdmin, adminHelper } = require("dotenv").config().parsed;
+const users_with_access = [admin, twinkByAdmin, adminHelper];
 const { texts } = require("./texts");
 const { buttons } = require("./buttons");
-const { sendAllResultMessages } = require("./mailing");
+const { sendAllResultMessages, addToMailing } = require("./mailing");
 
 const {
   playersAPI,
@@ -18,9 +19,9 @@ const getStarted = async function (ctx) {
   const id = ctx.update.message.from.id;
   const user = (await playersAPI.get(id)).data;
   if (!user) {
-    await ctx.reply(texts.welcome);
+    await Messages.send(id, texts.welcome);
     setTimeout(async () => {
-      await ctx.reply(texts.confirm);
+      await Messages.send(id, texts.confirm);
     }, 1500);
   }
 };
@@ -41,29 +42,103 @@ const newPlayer = async function (ctx, invited_from) {
   return newUser;
 };
 
+const currentPlayerInfo = function (player) {
+  let player_info = ``;
+  if (player.first_name) {
+    player_info += ` ${player.first_name}`;
+  }
+  if (player.last_name) {
+    player_info += ` ${player.last_name}`;
+  }
+  if (player.username) {
+    player_info += ` ${player.username}`;
+  }
+  if (player.was_created) {
+    let was_created = new Date(player.was_created);
+    was_created = `${was_created.getDate()} ${
+      texts.months[was_created.getMonth() + 1]
+    } ${was_created.getFullYear()}`;
+    player_info += ` <code>(${was_created})</code>`;
+  }
+  player_info += `\n`;
+  return player_info;
+};
+
+const sendAllUsersInfo = async function (chat_id) {
+  let players = (await playersAPI.getAll(true)).data;
+  let enabled_players = [];
+  let disabled_players = [];
+  players.map((player) => {
+    if (player.enabled) {
+      enabled_players.push(player);
+    } else {
+      if (player.id !== twinkByAdmin) {
+        disabled_players.push(player);
+      }
+    }
+  });
+  let enabled_result = `<b>Действующих пользователей: ${enabled_players.length}</b>\n\n`;
+  let enabled_count = 1;
+  enabled_players.sort((first, second) => {
+    return Date.parse(first.was_created) - Date.parse(second.was_created);
+  });
+  enabled_players.map((player) => {
+    let player_info = `<b>${enabled_count}</b>:`;
+    player_info += currentPlayerInfo(player);
+    enabled_result += player_info;
+    enabled_count++;
+  });
+
+  await Messages.send(chat_id, enabled_result, buttons.deleteThisMessage);
+
+  if (disabled_players.length > 0) {
+    let disabled_result = `<b>Отключенных пользователей: ${enabled_players.length}</b>\n\n`;
+    let disabled_count = 1;
+    disabled_players.map((player) => {
+      let player_info = `<b>${disabled_count}</b>:`;
+      player_info += currentPlayerInfo(player);
+      disabled_result += player_info;
+      disabled_count++;
+    });
+
+    await Messages.send(chat_id, disabled_result, buttons.deleteThisMessage);
+  }
+};
+
+const confirm_registration = async function (ctx) {
+  const sender = ctx.message.from;
+  const incomingText = ctx.message.text;
+  const referal = parseInt(incomingText);
+  if (!isNaN(referal)) {
+    if (typeof referal === "number") {
+      const referalData = (await playersAPI.get(referal)).data;
+      if (referalData) {
+        await newPlayer(ctx, referal);
+        await Messages.send(sender.id, texts.allowed, buttons.aboutInfo);
+        setTimeout(async () => {
+          await Messages.send(sender.id, texts.group, buttons.groupInvitation);
+          await Messages.send(sender.id, texts.admin, buttons.adminLink);
+        }, 1500);
+        setTimeout(async () => {
+          await addToMailing(sender.id);
+        }, 3000);
+      }
+    }
+  }
+};
+
 const textProcessing = async function (ctx) {
   const sender = ctx.message.from;
   const incomingText = ctx.message.text;
   const created = (await playersAPI.get(sender.id)).data;
   if (created) {
-    return "";
-  } else {
-    const referal = parseInt(incomingText);
-    if (!isNaN(referal)) {
-      if (typeof referal === "number") {
-        const referalData = (await playersAPI.get(referal)).data;
-        if (referalData) {
-          await newPlayer(ctx, referal);
-          await Messages.send(sender.id, texts.allowed);
-          setTimeout(async () => {
-            await ctx.reply(texts.shortInfo, buttons.groupInvitation);
-          }, 1500);
-          setTimeout(async () => {
-            await addToMailing(sender.id);
-          }, 3000);
-        }
+    if (users_with_access.includes(sender.id.toString())) {
+      if (incomingText.toLowerCase().includes(`users`)) {
+        await sendAllUsersInfo(sender.id);
       }
     }
+  } else {
+    await confirm_registration(ctx);
   }
 };
 
@@ -81,7 +156,9 @@ const answerProcessing = async function (ctx) {
     }
 
     if (options[0] === 1) {
-      await Messages.send(player, texts.cantToday, buttons.deleteThisMessage);
+      if (player_vote.polls_sent === 1) {
+        await Messages.send(player, texts.cantToday, buttons.deleteThisMessage);
+      }
       return await player_voteAPI.update(player, { ready_to_play: false });
     }
 
@@ -152,7 +229,10 @@ const privateStatus = async function (ctx) {
     // если с момента создания прошло больше 30 минут (привели время выше к минутам)
     if (dataComparsion > 30) {
       await playersAPI.update(user_id, true);
-      const result = await ctx.reply(
+
+      user_id;
+      const result = await Messages.send(
+        user_id,
         texts.welcomeBack,
         buttons.groupInvitation
       );

@@ -39,7 +39,7 @@ const sendAllResultMessages = async function (player_id, player_vote) {
 
   if (fullResultSettings.enabled) {
     if (player_vote.full_result_message_id === null) {
-      const normalFullResult = await setResultToNormal(fullResult, true);
+      const normalFullResult = await setResultToText(fullResult, true);
       const messageFullResult = await Messages.send(
         player_id,
         normalFullResult
@@ -54,7 +54,7 @@ const sendAllResultMessages = async function (player_id, player_vote) {
   if (personalResultSettings.enabled) {
     if (player_vote.personal_result_message_id === null) {
       const personalResult = await createPersonalResult(player_id, fullResult);
-      const normalPersonalResult = await setResultToNormal(
+      const normalPersonalResult = await setResultToText(
         personalResult,
         false,
         player_id
@@ -81,6 +81,7 @@ const createEmptyResult = async function () {
     games.forEach((game) => {
       emptyResult[time_id].push({
         name: game.name,
+        icon: game.icon,
         current_players: [],
         min_players: game.min_players,
         max_players: game.max_players,
@@ -194,7 +195,7 @@ const createPersonalResult = async function (player_id, filledResult) {
   return personal_filled_result;
 };
 
-const setResultToNormal = async function (
+const setResultToText = async function (
   resultObject,
   fullResult = true,
   player_id
@@ -231,7 +232,15 @@ const setResultToNormal = async function (
             if (game.name.includes("(")) {
               game.name = game.name.slice(0, game.name.indexOf(`(`) - 1);
             }
-            currentTimeInfo += texts.games[game.name];
+            if (texts.games[game.name] !== game.icon) {
+              currentTimeInfo += texts.games[game.name];
+              console.log(
+                `Данные по иконке из БД берутся некорректно, нужно исправление`
+              );
+              //await Messages.send(admin, `Данные по иконке из БД берутся некорректно, нужно исправление`);
+            } else {
+              currentTimeInfo += game.icon;
+            }
             currentTimeInfo += `  `;
             currentTimeInfo += game.name;
             currentTimeInfo += `  <code>[голосов: ${game.current_players.length}]</code>`;
@@ -347,7 +356,7 @@ const createTimeOptions = async function (forPoll = false) {
 
 const updateAllResultMessages = async function () {
   const fullResult = await createFilledResult();
-  const normalFullResult = await setResultToNormal(fullResult, true);
+  const normalFullResult = await setResultToText(fullResult, true);
   const currentHour = new Date().getHours();
   const currentMinutes = new Date().getMinutes();
   const leftMinutes = 60 - currentMinutes;
@@ -408,7 +417,7 @@ const updateAllResultMessages = async function () {
           player_info.player_id,
           fullResult
         );
-        let normalPersonalResult = await setResultToNormal(
+        let normalPersonalResult = await setResultToText(
           personalResult,
           false,
           player_info.player_id
@@ -546,10 +555,12 @@ const mailing = async function (hours, minutes, sender) {
 };
 
 const mailingFirstPoll = async function (message_id) {
-  const players = (await playersAPI.getAll()).data;
-  players.forEach((element) => {
-    player_voteAPI.create(element.id);
-    Messages.forward(element.id, message_id);
+  const players = (await playersAPI.getAll(true)).data;
+  players.forEach((player) => {
+    if (player.enabled) {
+      player_voteAPI.create(player.id);
+      Messages.forward(player.id, message_id);
+    }
   });
   return "Рассылка завершена (первый опрос)";
 };
@@ -586,10 +597,10 @@ const createGamePoll = async function () {
   const allGames = (await gamesAPI.getAll()).data;
   let games = [];
   allGames.forEach((game) => {
-    let game_info = ''
-    game_info += game.icon
-    game_info += '  '
-    game_info += game.name
+    let game_info = "";
+    game_info += game.icon;
+    game_info += "  ";
+    game_info += game.name;
     games.push(game_info);
   });
 
@@ -616,7 +627,7 @@ module.exports = {
   createEmptyResult,
   createFilledResult,
   createPersonalResult,
-  setResultToNormal,
+  setResultToText,
   createTimeOptions,
   updateAllResultMessages,
   mailingFirstPoll,

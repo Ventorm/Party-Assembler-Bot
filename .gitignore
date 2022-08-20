@@ -1,8 +1,5 @@
 .env
-texts.js
 db.js
-buttons.js
-backup.js
 sandbox.js
 sandbox 2.js
 ts_sandbox.ts

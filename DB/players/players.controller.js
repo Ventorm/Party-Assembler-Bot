@@ -5,7 +5,7 @@ class PlayersController {
     const usual_query = req.query.usual_query;
     let players;
     if (usual_query === `true`) {
-      players = await db.query(`select (id) FROM players WHERE enabled = TRUE`);
+      players = await db.query(`select * FROM players`);
     }
     if (usual_query === `false`) {
       players =

@@ -34,53 +34,52 @@ bot.action("delete", async (ctx) => {
   try {
     await ctx.deleteMessage();
   } catch (error) {
-    ctx.reply(texts.too_old);
+    await ctx.replyWithHTML(texts.too_old, buttons.deleteThisMessage);
   }
 });
 
 bot.command("assemble", async (ctx) => {
-  const player_id = ctx.message.from.id.toString();
-  const created = (await playersAPI.get(player_id)).data;
+  const player = ctx.message.from;
+  const created = (await playersAPI.get(player.id)).data;
   if (created) {
     const polls = (await pollsAPI.getAll()).data;
-    const sender = ctx.update.message.from;
 
     if (polls[0].message_id) {
-      await Messages.send(sender.id, texts.alreadyActive);
+      await ctx.replyWithHTML(texts.alreadyActive);
       return await ctx.deleteMessage();
     } else {
-      await beforeMailing(sender);
+      await beforeMailing(player);
       return await ctx.deleteMessage();
     }
   }
-  await Messages.send(player_id, texts.sorry);
+  await ctx.replyWithHTML(texts.sorry);
 });
 
 bot.command("invite", async (ctx) => {
-  const player_id = ctx.message.from.id.toString();
+  const player_id = ctx.message.from.id;
   const created = (await playersAPI.get(player_id)).data;
   if (created) {
-    await Messages.send(player_id, texts.invitation[0]);
-    await Messages.send(player_id, texts.invitation[1]);
-    await Messages.send(player_id, texts.invitation[2]);
-    await Messages.send(player_id, `<code>${player_id}</code>`);
+    await ctx.replyWithHTML(texts.invitation[0]);
+    await ctx.replyWithHTML(texts.invitation[1]);
+    await ctx.replyWithHTML(texts.invitation[2]);
+    await ctx.replyWithHTML(`<code>${player_id}</code>`);
     return await ctx.deleteMessage();
   }
-  await Messages.send(player_id, texts.sorry);
+  await ctx.replyWithHTML(texts.sorry);
 });
 
 bot.command("group", async (ctx) => {
-  const player_id = ctx.message.from.id.toString();
+  const player_id = ctx.message.from.id;
   const created = (await playersAPI.get(player_id)).data;
   if (created) {
     await ctx.replyWithHTML(texts.group, buttons.groupInvitation);
     return await ctx.deleteMessage();
   }
-  await Messages.send(player_id, texts.sorry);
+  await ctx.replyWithHTML(texts.sorry);
 });
 
 bot.command("settings", async (ctx) => {
-  const player_id = ctx.message.from.id.toString();
+  const player_id = ctx.message.from.id;
   const created = (await playersAPI.get(player_id)).data;
   if (created) {
     await ctx.replyWithHTML(
@@ -89,12 +88,16 @@ bot.command("settings", async (ctx) => {
     );
     return await ctx.deleteMessage();
   }
-  await Messages.send(player_id, texts.sorry);
+  await ctx.replyWithHTML(texts.sorry);
 });
 
+// и для команды из меню, и для кнопок
 bot.command("about", async (ctx) => {
-  await ctx.replyWithHTML(texts.about);
+  await ctx.replyWithHTML(texts.about, buttons.deleteThisMessage);
   return await ctx.deleteMessage();
+});
+bot.action("about", async (ctx) => {
+  return await ctx.replyWithHTML(texts.about, buttons.deleteThisMessage);
 });
 
 // обработка нажатий на кнопки, на данный момент только в настройках
