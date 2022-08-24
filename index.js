@@ -26,10 +26,11 @@ bot_server();
 
 setTimeout(async () => {
   try {
-    const mainPollData = (await pollsAPI.get(1)).data.message_id;
-    if (mainPollData) {
-      return await enableResultUpdates();
-    }
+    console.log(`Any changes?`)
+    //const mainPollData = (await pollsAPI.get(1)).data.message_id;
+    //if (mainPollData) {
+      //return await enableResultUpdates();
+    //}
   } catch (error) {
     console.log(error);
   }
