@@ -12,7 +12,6 @@ const start_time = parseInt(require("../config").start_time);
 const Messages = require("../components/Messages");
 const Polls = require("../components/Polls");
 const { texts } = require("./texts.js");
-//const { start } = require("telegram/client/auth");
 const { admin, twinkByAdmin } = require("../config");
 
 const addToMailing = async function (user_id) {
