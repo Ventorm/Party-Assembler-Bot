@@ -17,6 +17,7 @@ const {
   player_voteAPI,
   player_settingsAPI,
 } = require("./DB/db_API");
+const { stopAllPolls } = require("./components/Polls.js");
 
 //Launch Servers
 db_server();
@@ -45,6 +46,7 @@ const devFun = async function () {
       `Бот перезапущен.\n\nВремя на сервере: <b>${hh}:${mm}</b>`,
       buttons.deleteThisMessage
     );
+    Polls.stopAllPolls()
     //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
