@@ -30,13 +30,6 @@ setTimeout(async () => {
     if (mainPollData) {
       return await enableResultUpdates();
     }
-    const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
-    await Messages.send(
-      admin,
-      `Бот перезапущен.\n\nВремя на сервере: <b>${currentTime}</b>`,
-      buttons.deleteThisMessage
-    );
-    Messages.send(admin, 123)
   } catch (error) {
     console.log(error);
   }
@@ -45,7 +38,12 @@ setTimeout(async () => {
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
-    //Messages.send(admin, 123)
+    const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    await Messages.send(
+      admin,
+      `Бот перезапущен.\n\nВремя на сервере: <b>${currentTime}</b>`,
+      buttons.deleteThisMessage
+    );
     //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
