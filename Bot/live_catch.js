@@ -1,5 +1,5 @@
 const { Telegraf } = require("telegraf");
-const { bot_token } = require("dotenv").config().parsed;
+const { bot_token } = require("../config");
 const { playersAPI, pollsAPI } = require("../DB/db_API");
 const { texts } = require("./texts");
 const { beforeMailing } = require("./mailing.js");

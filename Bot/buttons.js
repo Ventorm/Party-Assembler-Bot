@@ -1,8 +1,12 @@
 const { Markup } = require(`telegraf`);
 const { player_settingsAPI, player_voteAPI } = require("../DB/db_API.js");
 const { sendAllResultMessages } = require("./mailing.js");
-const { admin, adminUserName, twinkByAdmin, adminHelper } =
-  require("dotenv").config().parsed;
+const {
+  admin,
+  adminUserName,
+  twinkByAdmin,
+  adminHelper,
+} = require("../config");
 const { texts } = require("./texts");
 const Messages = require("../components/Messages.js");
 const Polls = require("../components/Polls.js");

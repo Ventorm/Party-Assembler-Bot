@@ -7,11 +7,13 @@ const {
   player_timeAPI,
 } = require("../DB/db_API");
 const schedule = require("node-schedule");
-const end_time = parseInt(require("dotenv").config().parsed.end_time);
+const end_time = parseInt(require("../config").end_time);
+const start_time = parseInt(require("../config").start_time);
 const Messages = require("../components/Messages");
 const Polls = require("../components/Polls");
 const { texts } = require("./texts.js");
-const { admin, twinkByAdmin } = require("dotenv").config().parsed;
+const { start } = require("telegram/client/auth");
+const { admin, twinkByAdmin } = require("../config");
 
 const addToMailing = async function (user_id) {
   const polls = (await pollsAPI.getAll()).data;
@@ -503,11 +505,17 @@ const beforeMailing = async function (sender) {
   const currentDate = new Date();
   let hours = currentDate.getHours();
   let minutes = currentDate.getMinutes();
-  if (hours === end_time + 1 || (hours === end_time && minutes >= 30)) {
-    return Messages.send(sender.id, texts.too_late);
+  if (hours >= end_time) {
+    return Messages.send(
+      sender.id,
+      texts.too_late + "\n\n" + texts.time_for_create
+    );
   }
-  if (hours < 8 || (hours === 8 && minutes < 30)) {
-    return Messages.send(sender.id, texts.too_early);
+  if (hours < start_time) {
+    return Messages.send(
+      sender.id,
+      texts.too_early + "\n\n" + texts.time_for_create
+    );
   }
   return mailing(hours, minutes, sender);
 };

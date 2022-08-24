@@ -5,8 +5,7 @@ const {
   player_timeAPI,
 } = require("../DB/db_API");
 const { default: axios } = require("axios");
-const { twinkByAdmin } = require("dotenv").config().parsed;
-const bot_token = require("dotenv").config().parsed.bot_token;
+const { bot_token, twinkByAdmin } = require("../config");
 
 class Polls {
   async send(

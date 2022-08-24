@@ -3,9 +3,10 @@ const Polls = require("./components/Polls.js");
 const { enableResultUpdates } = require("./Bot/mailing");
 const { db_server } = require("./DB/server.js");
 const { bot_server } = require("./Bot/server.js");
-const { admin, twinkByAdmin, adminHelper } = require("dotenv").config().parsed;
+const { admin, twinkByAdmin, adminHelper } = require("./config");
 const { texts } = require("./Bot/texts.js");
 const { buttons } = require("./Bot/buttons.js");
+const { default: axios } = require("axios");
 
 const {
   pollsAPI,
@@ -22,23 +23,30 @@ db_server();
 bot_server();
 
 // проверка, есть ли активные опросы (при перезапуске программы). Если да, то возобновить обновление расписания
+
 setTimeout(async () => {
-  const mainPollData = (await pollsAPI.get(1)).data.message_id;
-  if (mainPollData) {
-    return await enableResultUpdates();
+  try {
+    const mainPollData = (await pollsAPI.get(1)).data.message_id;
+    if (mainPollData) {
+      return await enableResultUpdates();
+    }
+  } catch (error) {
+    console.log(error);
   }
-}, 1500);
+}, 2 * 1000);
 
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
+    //Messages.send(admin, 123)
+    //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
     //await Messages.send(admin, 123, buttons.deleteThisMessage)
-    //await Polls.stopAllPolls()
+    //Polls.stopAllPolls()
     //!!!ниже рассылка по !Всем активным пользователям
     //(await playersAPI.getAll(true)).data.forEach((user) => {if (user.enabled) {await Messages.send(user.id, texts.forAllInfoMessage)}});
-  }, 500);
+  }, 1 * 1000);
 };
 devFun();
 

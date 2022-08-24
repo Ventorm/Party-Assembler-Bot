@@ -1,5 +1,5 @@
 const db = require("../db_pool");
-const env_vars = require("dotenv").config().parsed;
+const env_vars = require("../../config");
 const end_time = parseInt(env_vars.end_time);
 
 class Player_timeController {

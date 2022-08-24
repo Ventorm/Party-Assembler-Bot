@@ -1,6 +1,6 @@
 const Messages = require("../components/Messages.js");
 const Polls = require("../components/Polls.js");
-const { admin, twinkByAdmin, adminHelper } = require("dotenv").config().parsed;
+const { admin, twinkByAdmin, adminHelper } = require("../config");
 const users_with_access = [admin, twinkByAdmin, adminHelper];
 const { texts } = require("./texts");
 const { buttons } = require("./buttons");

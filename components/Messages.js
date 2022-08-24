@@ -1,5 +1,5 @@
 const { default: axios } = require("axios");
-const { bot_token, twinkByAdmin } = require("dotenv").config().parsed;
+const { bot_token, twinkByAdmin } = require("../config");
 
 class Messages {
   async send(chat_id, content, pinnedButtons = false, parse_mode = "HTML") {
