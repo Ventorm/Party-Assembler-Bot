@@ -38,7 +38,7 @@ setTimeout(async () => {
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
-    const hh = ("0" + new Date().getHours().toString()).slice(-2);
+    const hh = ("0" + (new Date().getHours() + 3).toString()).slice(-2);
     const mm = ("0" + new Date().getMinutes().toString()).slice(-2);
     await Messages.send(
       admin,
