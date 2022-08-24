@@ -3,7 +3,7 @@ const Polls = require("./components/Polls.js");
 const { enableResultUpdates } = require("./Bot/mailing");
 const { db_server } = require("./DB/server.js");
 const { bot_server } = require("./Bot/server.js");
-const { admin, twinkByAdmin, adminHelper } = require("./config");
+const { admin, twinkByAdmin, adminHelper, bot_url } = require("./config");
 const { texts } = require("./Bot/texts.js");
 const { buttons } = require("./Bot/buttons.js");
 const { default: axios } = require("axios");
@@ -27,6 +27,7 @@ bot_server();
 setTimeout(async () => {
   try {
     console.log(`Any changes?`)
+    console.log(bot_url)
     //const mainPollData = (await pollsAPI.get(1)).data.message_id;
     //if (mainPollData) {
       //return await enableResultUpdates();
