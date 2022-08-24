@@ -26,21 +26,24 @@ bot_server();
 
 setTimeout(async () => {
   try {
-    
     const mainPollData = (await pollsAPI.get(1)).data.message_id;
     if (mainPollData) {
       return await enableResultUpdates();
     }
-    Messages.send(admin, `Бот перезапущен.\n\nВремя на сервере: <b>${new Date().getHours()}:${new Date().getMinutes()}</b>`)
+    const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    await Messages.send(
+      admin,
+      `Бот перезапущен.\n\nВремя на сервере: <b>${currentTime}</b>`,
+      buttons.deleteThisMessage
+    );
   } catch (error) {
     console.log(error);
   }
-}, 2 * 1000);
+}, 5 * 1000);
 
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
-
     //Messages.send(admin, 123)
     //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
