@@ -36,6 +36,7 @@ setTimeout(async () => {
       `Бот перезапущен.\n\nВремя на сервере: <b>${currentTime}</b>`,
       buttons.deleteThisMessage
     );
+    Messages.send(admin, 123)
   } catch (error) {
     console.log(error);
   }

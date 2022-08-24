@@ -8,18 +8,6 @@ const pool = new Pool({
   user: userDB,
   password: passwordDB,
   ssl: { rejectUnauthorized: false },
-  //idleTimeoutMillis: 30000,
-  //connectionTimeoutMillis: 2000
 });
-
-/*
-const pool = new Pool({
-  user: "postgres",
-  password: "f0k4b0y2f",
-  host: "localhost",
-  port: 5432,
-  database: "votebot",
-});
-*/
 
 module.exports = pool;
