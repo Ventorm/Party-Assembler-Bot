@@ -6,7 +6,7 @@ const { bot_server } = require("./Bot/server.js");
 const { admin, twinkByAdmin, adminHelper, bot_url } = require("./config");
 const { texts } = require("./Bot/texts.js");
 const { buttons } = require("./Bot/buttons.js");
-const { default: axios } = require("axios");
+const schedule = require("node-schedule");
 
 const {
   pollsAPI,
@@ -33,18 +33,19 @@ setTimeout(async () => {
   } catch (error) {
     console.log(error);
   }
-}, 5 * 1000);
+}, 2 * 1000);
 
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
-    const hh = ("0" + (new Date().getHours() + 3).toString()).slice(-2);
+    const hh = ("0" + new Date().getHours() .toString()).slice(-2);
     const mm = ("0" + new Date().getMinutes().toString()).slice(-2);
     await Messages.send(
       admin,
       `Бот перезапущен.\n\nВремя на сервере: <b>${hh}:${mm}</b>`,
       buttons.deleteThisMessage
     );
+    const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
     //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
