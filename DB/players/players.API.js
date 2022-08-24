@@ -1,5 +1,5 @@
 const { default: axios } = require("axios");
-const { bot_url } = require("dotenv").config().parsed;
+const { bot_url } = require("../../config");
 
 class playersAPI {
   //get all id from players, where bot is enabled
