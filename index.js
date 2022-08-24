@@ -38,10 +38,11 @@ setTimeout(async () => {
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
-    const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`;
+    const hh = ("0" + currentDate.getHours().toString()).slice(-2);
+    const mm = ("0" + currentDate.getMinutes().toString()).slice(-2);
     await Messages.send(
       admin,
-      `Бот перезапущен.\n\nВремя на сервере: <b>${currentTime}</b>`,
+      `Бот перезапущен.\n\nВремя на сервере: <b>${hh}:${mm}</b>`,
       buttons.deleteThisMessage
     );
     //console.log(await pollsAPI.getAll())
