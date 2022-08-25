@@ -45,7 +45,9 @@ bot.command("assemble", async (ctx) => {
     const polls = (await pollsAPI.getAll()).data;
 
     if (polls[0].message_id) {
-      await ctx.replyWithHTML(texts.alreadyActive);
+      await ctx.replyWithHTML(
+        texts.alreadyActive + "\n\n" + texts.time_for_create
+      );
       return await ctx.deleteMessage();
     } else {
       await beforeMailing(player);
