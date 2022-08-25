@@ -501,7 +501,10 @@ const pollsCreatedToday = async function () {
 
 const beforeMailing = async function (sender) {
   if (await pollsCreatedToday()) {
-    return Messages.send(sender.id, texts.alreadyFinished);
+    return Messages.send(
+      sender.id,
+      texts.alreadyFinished + "\n\n" + texts.time_for_create
+    );
   }
 
   const currentDate = createDateWithTargetGMT();
