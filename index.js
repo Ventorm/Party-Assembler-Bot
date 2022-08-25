@@ -47,7 +47,7 @@ setTimeout(async () => {
 
   await Messages.send(
     admin,
-    `Бот перезапущен.\n\n<b>Время:</b>\n<code>${hh}:${mm}</code> — сервер\n<code>${Moscow_hh}:${Moscow_mm}</code> — Москва`,
+    `Бот перезапущен.\n\n<b>Время:</b>\n<pre>${hh}:${mm}</pre> — сервер\n<pre>${Moscow_hh}:${Moscow_mm}</pre> — Москва`,
     buttons.deleteThisMessage
   );
 
