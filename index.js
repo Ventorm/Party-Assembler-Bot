@@ -45,7 +45,7 @@ const devFun = async function () {
       `Бот перезапущен.\n\nВремя на сервере: <b>${hh}:${mm}</b>`,
       buttons.deleteThisMessage
     );
-    const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
+    const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {Messages.send(twinkByAdmin, `<i>Dyno is Alive</i>`); await pollsAPI.get(1);});
     //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
