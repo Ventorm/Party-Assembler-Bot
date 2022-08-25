@@ -9,6 +9,8 @@ const {
 const schedule = require("node-schedule");
 const end_time = parseInt(require("../config").end_time);
 const start_time = parseInt(require("../config").start_time);
+//const { createDateFromGMT }
+//const MoscowGMT = parseInt(require("../config").MoscowGMT);
 const Messages = require("../components/Messages");
 const Polls = require("../components/Polls");
 const { texts } = require("./texts.js");
@@ -158,7 +160,9 @@ const createPersonalResult = async function (player_id, filledResult) {
   }
 
   // проверка, остались ли выбранные игроком опции времени актуальными на остаток дня
-  const currentHour = new Date().getHours();
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + MoscowGMT);
+  const currentHour = currentDate.getHours();
   let actialTimes = false;
   player_times.forEach((time) => {
     if (time >= currentHour) {
@@ -202,7 +206,8 @@ const setResultToText = async function (
   player_id
 ) {
   let normalResult = ``;
-  const currentDate = new Date();
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + MoscowGMT);
   const currentTime =
     ("0" + currentDate.getHours().toString()).slice(-2) +
     ":" +
@@ -323,7 +328,8 @@ const setResultToText = async function (
 };
 
 const createTimeOptions = async function (forPoll = false) {
-  const currentDate = new Date();
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + MoscowGMT);
   let hours = currentDate.getHours();
   let minutes = currentDate.getMinutes();
   let hh_mm =
@@ -358,8 +364,10 @@ const createTimeOptions = async function (forPoll = false) {
 const updateAllResultMessages = async function () {
   const fullResult = await createFilledResult();
   const normalFullResult = await setResultToText(fullResult, true);
-  const currentHour = new Date().getHours();
-  const currentMinutes = new Date().getMinutes();
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + MoscowGMT);
+  const currentHour = currentDate.getHours();
+  const currentMinutes = currentDate.getMinutes();
   const leftMinutes = 60 - currentMinutes;
   const players_with_results = (await player_voteAPI.getAll()).data;
   for (
@@ -483,7 +491,8 @@ const updateAllResultMessages = async function () {
 
 const pollsCreatedToday = async function () {
   //берём дату создания последнего опроса (игры)
-  const currentDate = new Date();
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + MoscowGMT);
   const polls = (await pollsAPI.getAll()).data;
   const was_created = new Date(Date.parse(polls[0].was_created));
 
@@ -501,7 +510,8 @@ const beforeMailing = async function (sender) {
     return Messages.send(sender.id, texts.alreadyFinished);
   }
 
-  const currentDate = new Date();
+  let currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + MoscowGMT);
   let hours = currentDate.getHours();
   let minutes = currentDate.getMinutes();
   if (hours >= end_time) {
@@ -617,7 +627,8 @@ const createGamePoll = async function () {
 
 const enableResultUpdates = async function () {
   const intervalCheck = schedule.scheduleJob(`*/5 * * * *`, async function () {
-    const now = new Date();
+    let now = new Date();
+    now.setHours(now.getHours() + MoscowGMT);
     const hours = now.getHours();
     const minutes = now.getMinutes();
     if (hours === end_time + 1 || (hours === end_time && minutes >= 30)) {
