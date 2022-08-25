@@ -13,6 +13,5 @@ const createDateWithTargetGMT = function (targetGMT = MoscowGMT) {
   }
   return now;
 };
-console.log(createDateWithTargetGMT(3))
 
 module.exports = { createDateWithTargetGMT };
