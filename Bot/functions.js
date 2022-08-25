@@ -57,7 +57,7 @@ const currentPlayerInfo = function (player) {
   if (player.was_created) {
     let was_created = new Date(player.was_created);
     was_created = `${was_created.getDate()} ${
-      texts.months[was_created.getMonth() + 1]
+      texts.months[was_created.getMonth()]
     } ${was_created.getFullYear()}`;
     player_info += ` <code>(${was_created})</code>`;
   }
