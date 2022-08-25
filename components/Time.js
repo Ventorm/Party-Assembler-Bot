@@ -1,6 +1,6 @@
 const MoscowGMT = parseInt(require("../config").MoscowGMT);
 
-const createDateFromGMT = function (targetGMT = MoscowGMT) {
+const createDateWithTargetGMT = function (targetGMT = MoscowGMT) {
   const nowServerHours = new Date().getHours();
   const nowLocal = new Date().toLocaleString("ru-RU", {
     timeZone: "Europe/Moscow",
@@ -13,6 +13,6 @@ const createDateFromGMT = function (targetGMT = MoscowGMT) {
   }
   return now;
 };
-console.log(createDateFromGMT(3))
+console.log(createDateWithTargetGMT(3))
 
-module.exports = { createDateFromGMT };
+module.exports = { createDateWithTargetGMT };

@@ -1,4 +1,5 @@
 const db = require("../db_pool");
+const { createDateWithTargetGMT } = require("../../components/Time");
 
 class PlayersController {
   async getAllPlayers(req, res) {
@@ -36,7 +37,7 @@ class PlayersController {
   async createPlayer(req, res) {
     const { id, username, first_name, last_name, invited_from } = req.body;
 
-    const today = new Date();
+    const today = createDateWithTargetGMT();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
     const date = today.getDate();

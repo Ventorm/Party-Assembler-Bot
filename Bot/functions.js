@@ -5,6 +5,7 @@ const users_with_access = [admin, twinkByAdmin, adminHelper];
 const { texts } = require("./texts");
 const { buttons } = require("./buttons");
 const { sendAllResultMessages, addToMailing } = require("./mailing");
+const { createDateWithTargetGMT } = require(`./components/Time`);
 
 const {
   playersAPI,
@@ -226,7 +227,7 @@ const privateStatus = async function (ctx) {
     const created_at = Date.parse(
       (await playersAPI.get(user_id)).data.was_created
     );
-    const dataComparsion = (new Date() - created_at) / 1000 / 60;
+    const dataComparsion = (createDateWithTargetGMT() - created_at) / 1000 / 60;
     // если с момента создания прошло больше 30 минут (привели время выше к минутам)
     if (dataComparsion > 30) {
       await playersAPI.update(user_id, true);

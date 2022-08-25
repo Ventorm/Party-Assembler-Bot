@@ -1,5 +1,5 @@
 const db = require("../db_pool");
-const MoscowGMT = parseInt(require("../../config").MoscowGMT);
+const { createDateWithTargetGMT } = require("../../components/Time");
 
 class PollsController {
   async getAllPolls(req, res) {
@@ -29,8 +29,7 @@ class PollsController {
     const order_id = req.params.id;
     const { poll_id, message_id } = req.body;
 
-    let today = new Date();
-    today.setHours(today.getHours() + MoscowGMT);
+    const today = createDateWithTargetGMT();
     const year = today.getFullYear();
     // месяц берётся от 0 до 11, для удобства далем +1
     const month = today.getMonth() + 1;

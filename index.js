@@ -7,7 +7,7 @@ const { admin, twinkByAdmin, adminHelper, bot_url } = require("./config");
 const { texts } = require("./Bot/texts.js");
 const { buttons } = require("./Bot/buttons.js");
 const schedule = require("node-schedule");
-const { createDateFromGMT } = require(`./components/Time`)
+const { createDateWithTargetGMT } = require(`./components/Time`);
 
 const {
   pollsAPI,
@@ -41,15 +41,16 @@ setTimeout(async () => {
   const hh = ("0" + new Date().getHours().toString()).slice(-2);
   const mm = ("0" + new Date().getMinutes().toString()).slice(-2);
 
-  let MoscowTime = createDateFromGMT();
+  const MoscowTime = createDateWithTargetGMT();
   const Moscow_hh = ("0" + MoscowTime.getHours().toString()).slice(-2);
   const Moscow_mm = ("0" + MoscowTime.getMinutes().toString()).slice(-2);
 
   await Messages.send(
     admin,
-    `Бот перезапущен.\n\nВремя на сервере: <b>${hh}:${mm}</b>\n\nВремя в Москве: <b>${Moscow_hh}:${Moscow_mm}</b>`,
+    `Бот перезапущен.\n\nВремя <code>(сервер)</code>: <b>${hh}:${mm}</b>\nВремя <code>(Москва)</code>: <b>${Moscow_hh}:${Moscow_mm}</b>`,
     buttons.deleteThisMessage
   );
+
   const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
   //const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {Messages.send(twinkByAdmin, `<i>Dyno is Alive</i>`); await pollsAPI.get(1);});
 }, 1 * 1000);
@@ -57,18 +58,6 @@ setTimeout(async () => {
 //#region DevRegion
 const devFun = async function () {
   setTimeout(async () => {
-    const hh = ("0" + new Date().getHours() .toString()).slice(-2);
-    const mm = ("0" + new Date().getMinutes().toString()).slice(-2);
-    let MoscowTime = createDateFromGMT();
-    const Moscow_hh = ("0" + MoscowTime.getHours() .toString()).slice(-2);
-    const Moscow_mm = ("0" + MoscowTime.getMinutes().toString()).slice(-2);
-
-    await Messages.send(
-      admin,
-      `Бот перезапущен.\n\nВремя на сервере: <b>${hh}:${mm}</b>\n\nВремя в Москве: <b>${Moscow_hh}:${Moscow_mm}</b>`,
-      buttons.deleteThisMessage
-    );
-    const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {Messages.send(twinkByAdmin, `<i>Dyno is Alive</i>`); await pollsAPI.get(1);});
     //console.log(await pollsAPI.getAll())
     //((await gamesAPI.getAll()).data).forEach(element => console.log(element.icon));
     //await Messages.send(admin, texts.cantToday, buttons.deleteThisMessage);
