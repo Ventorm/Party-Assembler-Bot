@@ -7,7 +7,7 @@ const { admin, twinkByAdmin, adminHelper, bot_url } = require("./config");
 const { texts } = require("./Bot/texts.js");
 const { buttons } = require("./Bot/buttons.js");
 const schedule = require("node-schedule");
-const { createDateWithTargetGMT } = require(`./components/Time`);
+const { createDateWithTargetGMT } = require(`./components/Time.js`);
 
 const {
   pollsAPI,
@@ -47,7 +47,7 @@ setTimeout(async () => {
 
   await Messages.send(
     admin,
-    `Бот перезапущен.\n\nВремя <code>(сервер)</code>: <b>${hh}:${mm}</b>\nВремя <code>(Москва)</code>: <b>${Moscow_hh}:${Moscow_mm}</b>`,
+    `Бот перезапущен.\n\n<code>${hh}:${mm}</code><b> (сервер)</b>\n<code>${Moscow_hh}:${Moscow_mm}</code><b> (Москва)</b>`,
     buttons.deleteThisMessage
   );
 

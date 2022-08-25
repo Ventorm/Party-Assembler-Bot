@@ -9,7 +9,7 @@ const {
 const schedule = require("node-schedule");
 const end_time = parseInt(require("../config").end_time);
 const start_time = parseInt(require("../config").start_time);
-const { createDateWithTargetGMT } = require(`./components/Time`);
+const { createDateWithTargetGMT } = require(`../components/Time.js`);
 const Messages = require("../components/Messages");
 const Polls = require("../components/Polls");
 const { texts } = require("./texts.js");

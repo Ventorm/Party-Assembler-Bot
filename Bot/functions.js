@@ -5,7 +5,7 @@ const users_with_access = [admin, twinkByAdmin, adminHelper];
 const { texts } = require("./texts");
 const { buttons } = require("./buttons");
 const { sendAllResultMessages, addToMailing } = require("./mailing");
-const { createDateWithTargetGMT } = require(`./components/Time`);
+const { createDateWithTargetGMT } = require(`../components/Time.js`);
 
 const {
   playersAPI,
