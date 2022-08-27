@@ -51,8 +51,8 @@ setTimeout(async () => {
     buttons.deleteThisMessage
   );
 
-  const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
-  //const doNotLetDynoToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {Messages.send(twinkByAdmin, `<i>Dyno is Alive</i>`); await pollsAPI.get(1);});
+  //const doNotLetToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
+  const doNotLetToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {Messages.send(twinkByAdmin, `<i>I'm Alive!</i>`); await pollsAPI.get(1);});
 }, 1 * 1000);
 
 //#region DevRegion
