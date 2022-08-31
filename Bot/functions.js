@@ -131,17 +131,19 @@ const confirm_registration = async function (ctx) {
 const textProcessing = async function (ctx) {
   const sender = ctx.message.from;
   const incomingText = ctx.message.text;
-  const created = (await playersAPI.get(sender.id)).data;
-  if (created) {
-    if (users_with_access.includes(sender.id.toString())) {
-      if (incomingText.toLowerCase().includes(`users`)) {
-        Messages.send(admin, JSON.stringify(ctx))
-        await sendAllUsersInfo(sender.id);
-        await ctx.deleteMessage();
+  const chat = ctx.message.chat;
+  if (chat.type === `private`) {
+    const created = (await playersAPI.get(sender.id)).data;
+    if (created) {
+      if (users_with_access.includes(sender.id.toString())) {
+        if (incomingText.toLowerCase().includes(`users`)) {
+          await sendAllUsersInfo(sender.id);
+          await ctx.deleteMessage();
+        }
       }
+    } else {
+      await confirm_registration(ctx);
     }
-  } else {
-    await confirm_registration(ctx);
   }
 };
 
