@@ -135,8 +135,8 @@ const textProcessing = async function (ctx) {
   if (created) {
     if (users_with_access.includes(sender.id.toString())) {
       if (incomingText.toLowerCase().includes(`users`)) {
-        Messages.send(admin, sender)
-        Messages.send(admin, incomingText)
+        Messages.send(admin, JSON.stringify(sender))
+        Messages.send(admin, JSON.stringify(incomingText))
         await sendAllUsersInfo(sender.id);
         await ctx.deleteMessage();
       }
