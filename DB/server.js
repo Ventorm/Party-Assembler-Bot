@@ -1,5 +1,10 @@
 const express = require("express");
-const { PORT } = require("../config");
+const { DATABASE_URL, bot_url } = require("../config");
+
+let PORT;
+if (!DATABASE_URL) {
+  PORT = bot_url.split(":")[2];
+}
 
 const app = express();
 app.use(express.json());

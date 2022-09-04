@@ -1,18 +1,23 @@
 const { DATABASE_URL } = require("../config");
 const Pool = require("pg").Pool;
+let { userDB, passwordDB, hostDB, portDB, nameDB } = require("../config");
+let ssl = false;
 
 //#region heroku DB parse
-let herokuDB = DATABASE_URL
-herokuDB = herokuDB.replaceAll(':', `_`)
-herokuDB = herokuDB.replaceAll('/', `_`)
-herokuDB = herokuDB.replaceAll('@', `_`)
-herokuDB = herokuDB.split('_')
+if (DATABASE_URL) {
+  let herokuDB = DATABASE_URL;
+  herokuDB = herokuDB.replaceAll(":", `_`);
+  herokuDB = herokuDB.replaceAll("/", `_`);
+  herokuDB = herokuDB.replaceAll("@", `_`);
+  herokuDB = herokuDB.split("_");
 
-const userDB = herokuDB[3]
-const passwordDB = herokuDB[4]
-const hostDB = herokuDB[5]
-const portDB = herokuDB[6]
-const nameDB = herokuDB[7]
+  userDB = herokuDB[3];
+  passwordDB = herokuDB[4];
+  hostDB = herokuDB[5];
+  portDB = herokuDB[6];
+  nameDB = herokuDB[7];
+  ssl = { rejectUnauthorized: false };
+}
 //#endregion
 
 const pool = new Pool({
@@ -21,7 +26,7 @@ const pool = new Pool({
   database: nameDB,
   user: userDB,
   password: passwordDB,
-  ssl: { rejectUnauthorized: false },
+  ssl: ssl,
 });
 
 module.exports = pool;
