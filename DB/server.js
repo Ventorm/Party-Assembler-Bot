@@ -1,7 +1,6 @@
 const express = require("express");
-const { DATABASE_URL, bot_url } = require("../config");
+let { PORT, DATABASE_URL, bot_url } = require("../config");
 
-let PORT;
 if (!DATABASE_URL) {
   PORT = bot_url.split(":")[2];
 }
