@@ -38,59 +38,64 @@ bot.action("delete", async (ctx) => {
   }
 });
 
+let assemble = false; // для предотвращения двойных опросов
 bot.command("assemble", async (ctx) => {
   const player = ctx.message.from;
   const created = (await playersAPI.get(player.id)).data;
-  if (created) {
-    const polls = (await pollsAPI.getAll()).data;
-
+  if (!created) {
+    return await ctx.replyWithHTML(texts.sorry);
+  }
+  const polls = (await pollsAPI.getAll()).data;
+  if (!assemble) {
+    assemble = true;
+    console.log(new Date().getSeconds());
     if (polls[0].message_id) {
       await ctx.replyWithHTML(
         texts.alreadyActive + "\n\n" + texts.time_for_create
       );
-      return await ctx.deleteMessage();
     } else {
       await beforeMailing(player);
-      return await ctx.deleteMessage();
     }
+    assemble = false;
+    console.log(new Date().getSeconds());
+    return await ctx.deleteMessage();
   }
-  await ctx.replyWithHTML(texts.sorry);
 });
 
 bot.command("invite", async (ctx) => {
   const player_id = ctx.message.from.id;
   const created = (await playersAPI.get(player_id)).data;
-  if (created) {
-    await ctx.replyWithHTML(texts.invitation[0]);
-    await ctx.replyWithHTML(texts.invitation[1]);
-    await ctx.replyWithHTML(texts.invitation[2]);
-    await ctx.replyWithHTML(`<code>${player_id}</code>`);
-    return await ctx.deleteMessage();
+  if (!created) {
+    return await ctx.replyWithHTML(texts.sorry);
   }
-  await ctx.replyWithHTML(texts.sorry);
+  await ctx.replyWithHTML(texts.invitation[0]);
+  await ctx.replyWithHTML(texts.invitation[1]);
+  await ctx.replyWithHTML(texts.invitation[2]);
+  await ctx.replyWithHTML(`<code>${player_id}</code>`);
+  return await ctx.deleteMessage();
 });
 
 bot.command("group", async (ctx) => {
   const player_id = ctx.message.from.id;
   const created = (await playersAPI.get(player_id)).data;
-  if (created) {
-    await ctx.replyWithHTML(texts.group, buttons.groupInvitation);
-    return await ctx.deleteMessage();
+  if (!created) {
+    return await ctx.replyWithHTML(texts.sorry);
   }
-  await ctx.replyWithHTML(texts.sorry);
+  await ctx.replyWithHTML(texts.group, buttons.groupInvitation);
+  return await ctx.deleteMessage();
 });
 
 bot.command("settings", async (ctx) => {
   const player_id = ctx.message.from.id;
   const created = (await playersAPI.get(player_id)).data;
-  if (created) {
-    await ctx.replyWithHTML(
-      texts.forButtonPersonalReminder,
-      await settingsButtons(ctx, true)
-    );
-    return await ctx.deleteMessage();
+  if (!created) {
+    return await ctx.replyWithHTML(texts.sorry);
   }
-  await ctx.replyWithHTML(texts.sorry);
+  await ctx.replyWithHTML(
+    texts.forButtonPersonalReminder,
+    await settingsButtons(ctx, true)
+  );
+  return await ctx.deleteMessage();
 });
 
 // и для команды из меню, и для кнопок

@@ -147,6 +147,15 @@ const textProcessing = async function (ctx) {
   }
 };
 
+const errorProcessing = async function (error, info) {
+  let message = `<b>Произошла ошибка.</b>\nОписание: ${error.message}\nФайл: ${error.fileName}\nСтрока: ${error.lineNumber}`;
+  if (info) {
+    message += `\n\nСобственное описание ошибки: ${info}`;
+  }
+  Messages.send(admin, message);
+  Messages.send(twinkByAdmin, error);
+};
+
 const answerProcessing = async function (ctx) {
   const player = ctx.update.poll_answer.user.id;
   const poll_id = ctx.update.poll_answer.poll_id;
@@ -263,6 +272,7 @@ const groupStatus = async function (ctx, status) {
 module.exports = {
   getStarted,
   textProcessing,
+  errorProcessing,
   answerProcessing,
   privateStatus,
   groupStatus,

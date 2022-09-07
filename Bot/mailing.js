@@ -528,11 +528,12 @@ const beforeMailing = async function (sender) {
 const mailing = async function (hours, minutes, sender) {
   if (hours < end_time - 1 || (hours === end_time - 1 && minutes < 30)) {
     const checkPoll = await createCheckPoll(true);
-    const gamePoll = await createGamePoll();
-    const timePoll = await createTimePoll();
-
     await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id);
+    
+    const gamePoll = await createGamePoll();
     await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id);
+
+    const timePoll = await createTimePoll();   
     await pollsAPI.update(3, timePoll.poll.id, timePoll.message_id);
 
     enableResultUpdates();
@@ -540,9 +541,9 @@ const mailing = async function (hours, minutes, sender) {
     mailingFirstPoll(checkPoll.message_id);
   } else {
     const checkPoll = await createCheckPoll(false);
-    const gamePoll = await createGamePoll();
-
     await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id);
+
+    const gamePoll = await createGamePoll();
     await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id);
 
     enableResultUpdates();

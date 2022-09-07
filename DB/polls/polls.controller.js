@@ -1,28 +1,41 @@
 const db = require("../db_pool");
 const { createDateWithTargetGMT } = require("../../components/Time");
+const Messages = require("../../components/Messages")
 
 class PollsController {
   async getAllPolls(req, res) {
-    const polls = await db.query(`select * FROM polls ORDER BY order_id`);
+    try {
+      const polls = await db.query(`select * FROM polls ORDER BY order_id`);
 
-    return res.json(polls.rows);
+      return res.json(polls.rows);
+    } catch (error) {
+      return error;
+    }
   }
 
   async getPoll(req, res) {
     const order_id = req.params.id;
-    const polls = await db.query(
-      `select (message_id) FROM polls where order_id = ${order_id}`
-    );
+    try {
+      const polls = await db.query(
+        `select (message_id) FROM polls where order_id = ${order_id}`
+      );
 
-    return res.json(polls.rows[0]);
+      return res.json(polls.rows[0]);
+    } catch (error) {
+      return error;
+    }
   }
 
   async updateAllPolls(req, res) {
-    const polls = await db.query(
-      `update polls SET poll_id = null, message_id = null`
-    );
+    try {
+      const polls = await db.query(
+        `update polls SET poll_id = null, message_id = null`
+      );
 
-    return res.json(polls.rows);
+      return res.json(polls.rows);
+    } catch (error) {
+      return error;
+    }
   }
 
   async updatePoll(req, res) {
@@ -39,11 +52,15 @@ class PollsController {
     const seconds = today.getSeconds();
     const todayTimestamp = `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
 
-    const polls = await db.query(
-      `update polls SET poll_id = ${poll_id}, message_id = ${message_id}, was_created = '${todayTimestamp}' WHERE order_id = ${order_id}`
-    );
+    try {
+      const polls = await db.query(
+        `update polls SET poll_id = ${poll_id}, message_id = ${message_id}, was_created = '${todayTimestamp}' WHERE order_id = ${order_id}`
+      );
 
-    return res.json(polls.rows[0]);
+      return res.json(polls.rows[0]);
+    } catch (error) {
+      return error;
+    }
   }
 }
 
