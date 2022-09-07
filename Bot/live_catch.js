@@ -38,17 +38,17 @@ bot.action("delete", async (ctx) => {
   }
 });
 
-let assemble = false; // для предотвращения двойных опросов
+let assembleQuery = false; // для предотвращения задвоения опросов
 bot.command("assemble", async (ctx) => {
   const player = ctx.message.from;
   const created = (await playersAPI.get(player.id)).data;
   if (!created) {
     return await ctx.replyWithHTML(texts.sorry);
   }
-  const polls = (await pollsAPI.getAll()).data;
-  if (!assemble) {
-    assemble = true;
-    console.log(new Date().getSeconds());
+  if (!assembleQuery) {
+    assembleQuery = true;
+    const polls = (await pollsAPI.getAll()).data;
+
     if (polls[0].message_id) {
       await ctx.replyWithHTML(
         texts.alreadyActive + "\n\n" + texts.time_for_create
@@ -56,10 +56,9 @@ bot.command("assemble", async (ctx) => {
     } else {
       await beforeMailing(player);
     }
-    assemble = false;
-    console.log(new Date().getSeconds());
-    return await ctx.deleteMessage();
+    assembleQuery = false;
   }
+  return await ctx.deleteMessage();
 });
 
 bot.command("invite", async (ctx) => {
