@@ -236,16 +236,7 @@ const setResultToText = async function (
             if (game.name.includes("(")) {
               game.name = game.name.slice(0, game.name.indexOf(`(`) - 1);
             }
-            if (texts.games[game.name] !== game.icon) {
-              currentTimeInfo += texts.games[game.name];
-              console.log(
-                `Данные по иконке из БД берутся некорректно, нужно исправление`
-              );
-              //await Messages.send(admin, `Данные по иконке из БД берутся некорректно, нужно исправление`);
-            } else {
-              currentTimeInfo += game.icon;
-              console.log('Works good!')
-            }
+            currentTimeInfo += game.icon;
             currentTimeInfo += `  `;
             currentTimeInfo += game.name;
             currentTimeInfo += `  <code>[голосов: ${game.current_players.length}]</code>`;
