@@ -14,6 +14,7 @@ const Messages = require("../components/Messages");
 const Polls = require("../components/Polls");
 const { texts } = require("./texts.js");
 const { admin, twinkByAdmin } = require("../config");
+//const { errorProcessing } = require("./functions");
 
 const addToMailing = async function (user_id) {
   const polls = (await pollsAPI.getAll()).data;
@@ -243,6 +244,7 @@ const setResultToText = async function (
               //await Messages.send(admin, `Данные по иконке из БД берутся некорректно, нужно исправление`);
             } else {
               currentTimeInfo += game.icon;
+              console.log('Works good!')
             }
             currentTimeInfo += `  `;
             currentTimeInfo += game.name;
