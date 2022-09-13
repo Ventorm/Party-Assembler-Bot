@@ -147,7 +147,7 @@ const textProcessing = async function (ctx) {
   }
 };
 
-const errorProcessing = async function (error, info) {
+const errorProcessing = async function (error, info = ``) {
   let message = `<b>Произошла ошибка.</b>\nОписание: ${error.message}\nФайл: ${error.fileName}\nСтрока: ${error.lineNumber}`;
   if (info) {
     message += `\n\nСобственное описание ошибки: ${info}`;
@@ -171,7 +171,13 @@ const answerProcessing = async function (ctx) {
 
     if (options[0] === 1) {
       if (player_vote.polls_sent === 1) {
-        await Messages.send(player, texts.cantToday, buttons.deleteThisMessage);
+        if (player_vote.ready_to_play === null) {
+          await Messages.send(
+            player,
+            texts.cantToday,
+            buttons.deleteThisMessage
+          );
+        }
       }
       return await player_voteAPI.update(player, { ready_to_play: false });
     }
