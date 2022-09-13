@@ -166,20 +166,19 @@ const answerProcessing = async function (ctx) {
   // первый опрос (готовность)
   if (poll_id === activePolls[0].poll_id) {
     if (options.length === 0) {
-      return await player_voteAPI.update(player, { ready_to_play: false });
+      if (player_vote.ready_to_play) {
+        return await player_voteAPI.update(player, { ready_to_play: false });
+      }
     }
 
     if (options[0] === 1) {
-      if (player_vote.polls_sent === 1) {
-        if (player_vote.ready_to_play === null) {
-          await Messages.send(
-            player,
-            texts.cantToday,
-            buttons.deleteThisMessage
-          );
-        }
+      if (player_vote.ready_to_play === null) {
+        await Messages.send(player, texts.cantToday, buttons.deleteThisMessage);
       }
-      return await player_voteAPI.update(player, { ready_to_play: false });
+      if (player_vote.ready_to_play !== false) {
+        await player_voteAPI.update(player, { ready_to_play: false });
+      }
+      return;
     }
 
     if (options[0] === 0) {
