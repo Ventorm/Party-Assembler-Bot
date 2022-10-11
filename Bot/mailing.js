@@ -616,7 +616,7 @@ const createGamePoll = async function () {
 };
 
 const enableResultUpdates = async function () {
-  const intervalCheck = schedule.scheduleJob(`*/5 * * * *`, async function () {
+  const intervalCheck = schedule.scheduleJob(`*/2 * * * *`, async function () {
     const now = createDateWithTargetGMT();
     const hours = now.getHours();
     const minutes = now.getMinutes();
