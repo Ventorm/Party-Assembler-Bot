@@ -199,67 +199,79 @@ const createPersonalResult = async function (player_id, filledResult) {
   return personal_filled_result;
 };
 
-const setResultToText = async function (
-  resultObject,
-  fullResult = true,
-  player_id
-) {
-  let normalResult = ``;
+const createSchedule = async function (resultObject, player_id) {
+  let schedule = ``;
+  for (let time_option = 0; time_option < resultObject.length; time_option++) {
+    let currentHour = (end_time - time_option).toString();
+    let currentTimeInfo = ``;
+    currentTimeInfo += `\n\n`;
+    currentTimeInfo += texts.numbers[currentHour[0]];
+    currentTimeInfo += texts.numbers[currentHour[1]];
+    currentTimeInfo += `<b>╏</b>0️⃣0️⃣\n`;
+
+    if (resultObject[time_option].length > 0) {
+      for (
+        let game_option = 0;
+        game_option < resultObject[time_option].length;
+        game_option++
+      ) {
+        let game = resultObject[time_option][game_option];
+        if (game.name.includes("(")) {
+          game.name = game.name.slice(0, game.name.indexOf(`(`) - 1);
+        }
+        currentTimeInfo += game.icon;
+        currentTimeInfo += `  `;
+        currentTimeInfo += game.name;
+        currentTimeInfo += `  <code>[голосов: ${game.current_players.length}]</code>`;
+
+        if (game_option + 1 !== resultObject[time_option].length) {
+          currentTimeInfo += `\n`;
+        }
+      }
+      schedule += currentTimeInfo;
+    }
+    if (resultObject[time_option].length === 0) {
+      if (!player_id) {
+        schedule += `<pre>Недостаточно игроков</pre>`;
+      }
+      if (player_id) {
+        let choosenTime = (await player_timeAPI.get(player_id)).data;
+        choosenTime = choosenTime.map((time) => time.time);
+        if (choosenTime.includes(end_time - time_option)) {
+          schedule += currentTimeInfo;
+          schedule += `<pre>Недостаточно игроков</pre>`;
+        }
+      }
+    }
+  }
+
+  return schedule;
+};
+
+const createUpdateTimeInfo = async function () {
   const currentDate = createDateWithTargetGMT();
   const currentTime =
     ("0" + currentDate.getHours().toString()).slice(-2) +
     ":" +
     ("0" + currentDate.getMinutes().toString()).slice(-2);
+
+  const updateTimeInfo = `\n\n<i>Обновлено в <b>${currentTime}</b></i>`;
+  return updateTimeInfo;
+};
+
+const setResultToText = async function (resultObject, fullResult, player_id) {
+  let normalResult = ``;
+  if (fullResult) {
+    normalResult += await createSchedule(resultObject, false);
+  }
+
   if (!fullResult) {
-    normalResult += `<b>ПЕРСОНАЛЬНОЕ РАСПИСАНИЕ  🎯</b>\n<i>Обновлено в <b>${currentTime}</b></i>`;
-    // если результат является двумерным массивом, а не текстовым статусом
+    normalResult += `<b>ПЕРСОНАЛЬНОЕ РАСПИСАНИЕ  🎯</b>\n`;
+    // если результат является двумерным массивом с информацией о предстоящих играх
     if (typeof resultObject !== `string`) {
-      for (
-        let time_option = 0;
-        time_option < resultObject.length;
-        time_option++
-      ) {
-        let currentHour = (end_time - time_option).toString();
-        let currentTimeInfo = ``;
-        currentTimeInfo += `\n\n`;
-        currentTimeInfo += texts.numbers[currentHour[0]];
-        currentTimeInfo += texts.numbers[currentHour[1]];
-        currentTimeInfo += `<b>╏</b>0️⃣0️⃣\n`;
-
-        if (resultObject[time_option].length > 0) {
-          for (
-            let game_option = 0;
-            game_option < resultObject[time_option].length;
-            game_option++
-          ) {
-            let game = resultObject[time_option][game_option];
-            if (game.name.includes("(")) {
-              game.name = game.name.slice(0, game.name.indexOf(`(`) - 1);
-            }
-            currentTimeInfo += game.icon;
-            currentTimeInfo += `  `;
-            currentTimeInfo += game.name;
-            currentTimeInfo += `  <code>[голосов: ${game.current_players.length}]</code>`;
-
-            if (game_option + 1 !== resultObject[time_option].length) {
-              currentTimeInfo += `\n`;
-            }
-          }
-          normalResult += currentTimeInfo;
-        }
-        if (resultObject[time_option].length === 0) {
-          let choosenTime = (await player_timeAPI.get(player_id)).data;
-          choosenTime = choosenTime.map((time) => time.time);
-          if (choosenTime.includes(end_time - time_option)) {
-            currentTimeInfo += `<pre>Недостаточно игроков</pre>`;
-            normalResult += currentTimeInfo;
-          }
-        }
-      }
-
-      return normalResult;
+      normalResult += await createSchedule(resultObject, player_id);
     }
-    // если результат является текстовым статусом, а не двумерным массивом
+    // если результат является текстовым статусом
     if (typeof resultObject === `string`) {
       normalResult += `\n\n`;
       if (resultObject === `not_enough_players`) {
@@ -274,47 +286,11 @@ const setResultToText = async function (
       if (resultObject === `incorrectly_filled_by_user`) {
         normalResult += texts.incorrectly_filled_by_user;
       }
-      return normalResult;
     }
   }
-  if (fullResult) {
-    normalResult += `<b>ОБЩЕЕ РАСПИСАНИЕ</b>\n<i>Обновлено в <b>${currentTime}</b></i>`;
-    for (
-      let time_option = 0;
-      time_option < resultObject.length;
-      time_option++
-    ) {
-      let currentHour = (end_time - time_option).toString();
-      normalResult += `\n\n`;
-      normalResult += texts.numbers[currentHour[0]];
-      normalResult += texts.numbers[currentHour[1]];
-      normalResult += `<b>╏</b>0️⃣0️⃣\n`;
 
-      if (resultObject[time_option].length > 0) {
-        for (
-          let game_option = 0;
-          game_option < resultObject[time_option].length;
-          game_option++
-        ) {
-          let game = resultObject[time_option][game_option];
-          if (game.name.includes("(")) {
-            game.name = game.name.slice(0, game.name.indexOf(`(`) - 1);
-          }
-          normalResult += texts.games[game.name];
-          normalResult += `  `;
-          normalResult += game.name;
-          normalResult += `  <code>[голосов: ${game.current_players.length}]</code>`;
-          if (game_option + 1 !== resultObject[time_option].length) {
-            normalResult += `\n`;
-          }
-        }
-      }
-      if (resultObject[time_option].length === 0) {
-        normalResult += `<pre>Недостаточно игроков</pre>`;
-      }
-    }
-    return normalResult;
-  }
+  normalResult += await createUpdateTimeInfo();
+  return normalResult;
 };
 
 const createTimeOptions = async function (forPoll = false) {
@@ -522,11 +498,11 @@ const mailing = async function (hours, minutes, sender) {
   if (hours < end_time - 1 || (hours === end_time - 1 && minutes < 30)) {
     const checkPoll = await createCheckPoll(true);
     await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id);
-    
+
     const gamePoll = await createGamePoll();
     await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id);
 
-    const timePoll = await createTimePoll();   
+    const timePoll = await createTimePoll();
     await pollsAPI.update(3, timePoll.poll.id, timePoll.message_id);
 
     enableResultUpdates();
