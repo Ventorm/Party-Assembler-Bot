@@ -71,7 +71,7 @@ const devFun = async function () {
     //await Messages.send(admin, `<b>Погода в Канаде (Оттава) в данный момент</b>\n\n<b>За окном:</b> 18.02°, облачно с прояснениями<b>\nОщущается как:</b> 17.78°`, buttons.deleteThisMessage)
     //await Messages.copy_send(admin, 364, admin, `Это скопированное сообщение ` + (new Date()).getSeconds())
     //console.log(await Polls.send(admin, `1 or 2?`, [`1`, `2`]))
-    Polls.stopAllPolls()
+    //Polls.stopAllPolls()
     //!!!ниже рассылка по !Всем активным пользователям
     //(await playersAPI.getAll(true)).data.forEach((user) => {if (user.enabled) {await Messages.send(user.id, texts.forAllInfoMessage)}});
   }, 1 * 1000);
