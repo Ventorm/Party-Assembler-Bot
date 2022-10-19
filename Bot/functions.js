@@ -139,6 +139,11 @@ const textProcessing = async function (ctx) {
         if (incomingText.toLowerCase().includes(`users`)) {
           await sendAllUsersInfo(sender.id);
           await ctx.deleteMessage();
+          return;
+        }
+        if (incomingText.toLowerCase().includes(`stop_all_polls`)) {
+          await Polls.stopAllPolls();
+          await Messages.send(sender.id, 'Выполнено')
         }
       }
     } else {
