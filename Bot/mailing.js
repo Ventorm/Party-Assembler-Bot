@@ -328,12 +328,14 @@ const createTimeOptions = async function (forPoll = false) {
   return time_options;
 };
 
+const times_obj = {count: 0}
 const updateAllResultMessages = async function () {
   const fullResult = await createFilledResult();
   const normalFullResult = await setResultToText(fullResult, true);
   const currentDate = createDateWithTargetGMT();
   const currentHour = currentDate.getHours();
   const currentMinutes = currentDate.getMinutes();
+  console.log(`Update #${times_obj.count++}. Current time is ${currentHour}:${currentMinutes}`)
   const leftMinutes = 60 - currentMinutes;
   const players_with_results = (await player_voteAPI.getAll()).data;
   for (
