@@ -54,7 +54,7 @@ setTimeout(async () => {
 
   //const doNotLetToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
   const doNotLetToSleepAfter30Mins = schedule.scheduleJob(
-    `*/1 * * * *`,
+    `*/10 * * * *`,
     async function () {
       Messages.send(twinkByAdmin, `<i>I'm Alive!</i>`);
       await pollsAPI.get(1);
