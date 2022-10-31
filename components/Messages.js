@@ -123,7 +123,7 @@ class Messages {
     if (from_chat_id) {
       url += `&from_chat_id=${from_chat_id}`;
     } else {
-      url += `from_chat_id=${twinkByAdmin}`;
+      url += `&from_chat_id=${twinkByAdmin}`;
     }
 
     try {
