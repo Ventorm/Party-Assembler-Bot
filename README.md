@@ -1,32 +1,53 @@
-# [Party Manager Bot](https://t.me/deadly_party_bot)
+# ___[Party Manager Bot](https://t.me/deadly_party_bot)___
 
-## Цель проекта
-Бот задумывался для решения проблемы сборов в небольшом игровом сообществе, у участников которого различные часовые пояса, планы в течение дня и предпочтения по играм.    
-Необходимо было существенно упростить организацию сборов без необходимости опрашивать лично в ручном режиме более 10 человек
+## ___**Цель проекта**___
+Автоматизировать организацию мероприятий для участников игрового сообщества, учитывая при этом часовые пояса, личные планы и предпочтения по играм каждого пользователя — без необходимости лично в ручном режиме опрашивать и координировать более 10 человек
 ____
 
-## Технологический стек
-<p>
-  <img src="https://github.com/devicons/devicon/blob/master/icons/nodejs/nodejs-original.svg" title="Node.js" alt="Node.js" width="40" height="40"/>&nbsp;
-  <img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original-wordmark.svg" title="PostgreSQL" alt="PostgreSQL" width="40" height="40"/>&nbsp;
-  <img src="https://github.com/devicons/devicon/blob/master/icons/heroku/heroku-original-wordmark.svg" title="Heroku"  alt="Heroku" width="40" height="40"/>&nbsp;
-  <img src="https://github.com/devicons/devicon/blob/master/icons/trello/trello-plain-wordmark.svg" title="Trello"  alt="Trello" width="40" height="40"/>&nbsp;
-  <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" title="Postman"  alt="Postman" width="40" height="40"/>&nbsp;
-  <img src="https://github.com/devicons/devicon/blob/master/icons/linux/linux-original.svg" title="Linux" alt="Linux" width="40" height="40"/>&nbsp;
-  <img src="https://github.com/devicons/devicon/blob/master/icons/docker/docker-original-wordmark.svg" title="Docker"  alt="Docker" width="40" height="40"/>&nbsp;
-</p>
+## ___**Стек технологий**___
+  <img src="https://github.com/devicons/devicon/blob/master/icons/nodejs/nodejs-original.svg" title="Node.js" alt="Node.js" width="20" height="20"/>&nbsp;   **Node.js**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original-wordmark.svg" title="PostgreSQL" alt="PostgreSQL" width="20" height="20"/>&nbsp;   **PostgreSQL**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/heroku/heroku-original-wordmark.svg" title="Heroku"  alt="Heroku" width="20" height="20"/>&nbsp;   **Heroku**    
+  <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" title="Postman"  alt="Postman" width="20" height="20"/>&nbsp;   **Postman**      
+  <img src="https://github.com/devicons/devicon/blob/master/icons/trello/trello-plain-wordmark.svg" title="Trello"  alt="Trello" width="20" height="20"/>&nbsp;   **Trello**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/docker/docker-original-wordmark.svg" title="Docker"  alt="Docker" width="20" height="20"/>&nbsp;   **Docker**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/linux/linux-original.svg" title="Linux" alt="Linux" width="20" height="20"/>&nbsp;   **Linux**  
+____
 
+## ___**Статус проекта**___
+Бот развёрнут на платформе Heroku, а [написать боту в Telegram](https://t.me/deadly_party_bot) можно в любое время, в том числе найдя его через поиск ___@deadly_party_bot___   
 ____
-## Функционал
-С помощью бота его участники могут запланировать интересные им игры на нужное время без необходимости лично согласовывать все планы друг с другом.    
-Пользователь за несколько кликов заполняет опросы на сегодняшний день. В результате ему выдаётся сводка по голосам, где отображается персональное расписание игр на сегодня, исходя из предпочтений всех участников опросов
+
+## ___**Функционал**___
+При начале общения с новым пользователем бот запрашивает и ожидает реферальный код для активации полного функционала, перечисленного ниже
+
+### Ввод команд
+Команды боту можно отправлять через кнопки в ___**Меню**___ бота или ручным вводом
+
+### Опросы
+Бот позволяет участникам по команде ___/assamble___ создать опросы по игровым мероприятиям, которые автоматически рассылаются всем пользователям.    
+Опросы заполняются в несколько кликов и позволяют пользователю выбрать интересующие его время и игры на сегодня.    
+Изменять голос в опросах можно до конца дня
+
+### Расписание на сегодня
+Каждый голосующий в опросах влияет на итоговый результат. После заполнения опросов пользователь получает 2 расписания:    
+- Персональное — отображает информацию только по мероприятиям, которые планируются на выбранные пользователем время и игры
+- Общее — отображает все мероприятия, вне зависимости от личных предпочтениях, указанных в опросах
+
+Расписания обновляются беззвучно каждую минуту.    
+Перед началом мероприятия пользователям поступает уведомление о предстоящем событии
+
+### Настройки
+По команде ___/settings___ для пользователей доступны личные настройки, позволяющие:
+- Отключить/включить общее/персональное расписание
+- Изменить время и отображение уведомлений по предстоящим играм
+
+### Приглашения
+С помощью команды ___/invite___ можно предоставлять полный доступ к боту другим пользователям Telegram.    
+Для подтверждения используется личный автоматически генерируемый код.
 ____
-## Действующий статус
-[Написать боту в Telegram](https://t.me/deadly_party_bot) можно в любое время, в том числе найдя его через поиск ___@deadly_party_bot___.    
-Полноценный функционал работает только для подтверждённых пользователей.    
-На данный момент бот развёрнут на платформе Heroku    
-____
-## Планы по развитию проекта
+
+## ___**Планы по развитию проекта**___
 1. Упаковка бота и базы данных PostgreSQL в контейнеры, используя Docker-compose, а после перенос на VPS-сервер (Linux)
 2. Дополнительные улучшения для пользователей, например уменьшение нажатий в опросах до 1-2 и без потери функционала
 3. Адаптация функционала для большого количества пользователей, чтобы система могла удобно и логично распределить, например, 100 и более участников
