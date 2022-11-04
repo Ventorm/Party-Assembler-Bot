@@ -355,7 +355,6 @@ const updateAllResultMessages = async function () {
           );
         } else {
           let time_check_id = end_time - currentHour - 1;
-          console.log(fullResult)
           // если нет игр в ближайший час
           if (fullResult[time_check_id].length === 0) {
             await Messages.edit(
@@ -415,7 +414,6 @@ const updateAllResultMessages = async function () {
             );
           } else {
             let time_check_id = end_time - currentHour - 1;
-            console.log(personalResult)
             // если нет игр в ближайший час
             if (personalResult[time_check_id].length === 0) {
               await Messages.edit(

@@ -6,6 +6,7 @@ const {
 } = require("../DB/db_API");
 const { default: axios } = require("axios");
 const { bot_token, twinkByAdmin } = require("../config");
+const Messages = require("./Messages");
 
 class Polls {
   async send(
@@ -32,6 +33,7 @@ class Polls {
   async stopAllPolls() {
     const method = "stopPoll";
     const polls = (await pollsAPI.getAll()).data;
+    // остановка опросов
     polls.forEach(async (poll) => {
       if (poll.message_id) {
         const url = `https://api.telegram.org/bot${bot_token}/${method}?chat_id=${twinkByAdmin}&message_id=${poll.message_id}`;
@@ -42,6 +44,17 @@ class Polls {
         }
       }
     });
+    // удаление расписаний
+    const usersWithResults = (await player_voteAPI.getAll()).data;
+    usersWithResults.forEach(async (user) => {
+      if (user.full_result_message_id) {
+        await Messages.delete(user.player_id, user.full_result_message_id);
+      }
+      if (user.personal_result_message_id) {
+        await Messages.delete(user.player_id, user.personal_result_message_id);
+      }
+    });
+    // очистка данных за последний день
     await player_voteAPI.deleteAll();
     await player_gameAPI.deleteAll();
     await player_timeAPI.deleteAll();
