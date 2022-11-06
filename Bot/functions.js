@@ -19,11 +19,20 @@ const {
 const getStarted = async function (ctx) {
   const id = ctx.update.message.from.id;
   const user = (await playersAPI.get(id)).data;
+  // если новый пользователь
   if (!user) {
     await Messages.send(id, texts.welcome);
     setTimeout(async () => {
       await Messages.send(id, texts.confirm);
     }, 1500);
+  }
+  // если возвращение старого пользователя при смене бота
+  if (user) {
+    if (!user.enabled) {
+      await playersAPI.update(id, true);
+      await Messages.send(id, texts.welcomeBack);
+      await addToMailing(id);
+    }
   }
 };
 
@@ -122,7 +131,7 @@ const confirm_registration = async function (ctx) {
         }, 1500);
         setTimeout(async () => {
           await addToMailing(sender.id);
-        }, 3000);
+        }, 1500);
       }
     }
   }
@@ -143,7 +152,7 @@ const textProcessing = async function (ctx) {
         }
         if (incomingText.toLowerCase().includes(`stop_all_polls`)) {
           await Polls.stopAllPolls();
-          await Messages.send(sender.id, 'Выполнено')
+          await Messages.send(sender.id, `Выполнено`);
         }
       }
     } else {

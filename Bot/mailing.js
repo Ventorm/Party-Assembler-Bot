@@ -25,7 +25,7 @@ const addToMailing = async function (user_id) {
       setTimeout(async () => {
         Messages.forward(user_id, polls[0].message_id);
         player_voteAPI.create(user_id);
-      }, 3000);
+      }, 1500);
     }
   }
 };
