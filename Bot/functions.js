@@ -261,20 +261,10 @@ const privateStatus = async function (ctx) {
     const dataComparsion = (createDateWithTargetGMT() - created_at) / 1000 / 60;
     // если с момента создания прошло больше 30 минут (привели время выше к минутам)
     if (dataComparsion > 30) {
-      await playersAPI.update(user_id, true);
-
-      user_id;
-      const result = await Messages.send(
-        user_id,
-        texts.welcomeBack,
-        buttons.groupInvitation
-      );
+      await Messages.send(user_id, texts.welcomeBack, buttons.groupInvitation);
     }
-    // если пользователь разблокировал бота, но опросы сегодня ему ещё не были отправлены
-    const player_vote = (await player_voteAPI.get(user_id)).data;
-    if (!player_vote) {
-      await addToMailing(user_id);
-    }
+    await playersAPI.update(user_id, true);
+    await addToMailing(user_id);
   }
 };
 
