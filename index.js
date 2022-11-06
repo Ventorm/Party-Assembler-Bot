@@ -73,8 +73,8 @@ const devFun = async function () {
     //console.log(await Polls.send(admin, `1 or 2?`, [`1`, `2`]))
     //Polls.stopAllPolls()
     //!!!ниже рассылка по !Всем активным пользователям
-    (await playersAPI.getAll(true)).data.forEach(async (user) => {if (!user.enabled) {await Messages.send(user.id, texts.forAllInfoMessage)}});
-    await Messages.send(admin, `Рассылка завершена`)
+    //(await playersAPI.getAll(true)).data.forEach(async (user) => {if (user.enabled) {await Messages.send(user.id, texts.forAllInfoMessage)}});
+    //await Messages.send(admin, `Рассылка завершена`)
   }, 1 * 1000);
 };
 devFun();

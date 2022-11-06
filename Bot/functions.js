@@ -102,13 +102,17 @@ const sendAllUsersInfo = async function (chat_id) {
   await Messages.send(chat_id, enabled_result, buttons.deleteThisMessage);
 
   if (disabled_players.length > 0) {
-    let disabled_result = `<b>Отключенных пользователей: ${enabled_players.length}</b>\n\n`;
+    let disabled_result = `<b>Отключенных пользователей: ${disabled_players.length}</b>\n\n`;
     let disabled_count = 1;
     disabled_players.map((player) => {
       let player_info = `<b>${disabled_count}</b>:`;
       player_info += currentPlayerInfo(player);
       disabled_result += player_info;
       disabled_count++;
+    });
+
+    disabled_players.sort((first, second) => {
+      return Date.parse(first.was_created) - Date.parse(second.was_created);
     });
 
     await Messages.send(chat_id, disabled_result, buttons.deleteThisMessage);
