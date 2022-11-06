@@ -75,9 +75,13 @@ const currentPlayerInfo = function (player) {
 };
 
 const sendAllUsersInfo = async function (chat_id) {
-  let players = (await playersAPI.getAll(true)).data;
   let enabled_players = [];
   let disabled_players = [];
+  let players = (await playersAPI.getAll(true)).data;
+  // сортировка пользователей по дате создания
+  players.sort((first, second) => {
+    return Date.parse(first.was_created) - Date.parse(second.was_created);
+  });
   players.map((player) => {
     if (player.enabled) {
       enabled_players.push(player);
@@ -87,25 +91,19 @@ const sendAllUsersInfo = async function (chat_id) {
       }
     }
   });
+  // список действующих пользователей
   let enabled_result = `<b>Действующих пользователей: ${enabled_players.length}</b>\n\n`;
   let enabled_count = 1;
-  enabled_players.sort((first, second) => {
-    return Date.parse(first.was_created) - Date.parse(second.was_created);
-  });
   enabled_players.map((player) => {
     let player_info = `<b>${enabled_count}</b>:`;
     player_info += currentPlayerInfo(player);
     enabled_result += player_info;
     enabled_count++;
   });
-
   await Messages.send(chat_id, enabled_result, buttons.deleteThisMessage);
 
+  // список отключенных пользователей
   if (disabled_players.length > 0) {
-    disabled_players.sort((first, second) => {
-      return Date.parse(first.was_created) - Date.parse(second.was_created);
-    });
-    
     let disabled_result = `<b>Отключенных пользователей: ${disabled_players.length}</b>\n\n`;
     let disabled_count = 1;
     disabled_players.map((player) => {
@@ -114,7 +112,6 @@ const sendAllUsersInfo = async function (chat_id) {
       disabled_result += player_info;
       disabled_count++;
     });
-
     await Messages.send(chat_id, disabled_result, buttons.deleteThisMessage);
   }
 };
