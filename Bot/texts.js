@@ -1,4 +1,4 @@
-const { admin, adminUserName, twinkByAdmin, adminHelper } = require("../config");
+const { admin, adminUserName, twinkByAdmin, adminHelper, bot_username } = require("../config");
 const start_time = parseInt(require("../config").start_time);
 const end_time = parseInt(require("../config").end_time);
 
@@ -30,7 +30,7 @@ const texts = {
     too_old: `Это сообщение слишком старое — мне уже технически не позволено его убрать`,
     invitation: {
         0: `Ты можешь поделиться моим функционалом со своим другом.\nНиже ссылка на мой чат`,
-        1: `<b>https://t.me/deadly_party_bot</b>`,
+        1: `<b>https://t.me/${bot_username}</b>`,
         2: `При первом запуске с новым пользователем мне нужно получить от него <b><u>твой код</u></b>.\n\nЭтот код твоему другу потребуется отправить ко мне в чат.\n<b>Ниже в сообщении сам код (копируется автоматически при нажатии)</b>`,
     },
     letsPlay: {
