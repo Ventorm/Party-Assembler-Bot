@@ -69,7 +69,7 @@ ____
 - Изменить время и отображение уведомлений по предстоящим играм
 
 <details> 
-  <summary>Пример окна настроек </summary>
+  <summary>Примеры окна настроек </summary>
   <img src="https://user-images.githubusercontent.com/107767949/202306435-cb7ed686-6242-4d6c-b6cc-506af30dbbe0.png" width="60%"><br>
   <img src="https://user-images.githubusercontent.com/107767949/202306485-e323370e-851c-4711-b7ec-be3a0f09015f.png" width="60%"><br>
 </details>
