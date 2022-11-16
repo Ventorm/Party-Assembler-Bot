@@ -68,15 +68,7 @@ bot.command("invite", async (ctx) => {
     return await ctx.replyWithHTML(texts.sorry);
   }
   await ctx.replyWithHTML(
-    texts.invitation[0] +
-      `\n` +
-      texts.invitation[1] +
-      `\n\n` +
-      texts.invitation[2] +
-      `\n\n` +
-      texts.invitation[3] +
-      `\n` +
-      `<code>${player_id}</code>`,
+    texts.invitation + `<code>${player_id}</code>`,
     buttons.deleteThisMessage
   );
   return await ctx.deleteMessage();
