@@ -75,7 +75,7 @@ ____
 Для подтверждения используется личный автоматически генерируемый код.
 <details> 
   <summary>Пример приглашения </summary>
-  <img src="https://user-images.githubusercontent.com/107767949/202312540-650d2c84-591c-4004-ba51-fd7bab605dcc.png" width="40%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202312540-650d2c84-591c-4004-ba51-fd7bab605dcc.png"><br>
 </details>
 
 ____
