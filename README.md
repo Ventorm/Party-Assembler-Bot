@@ -24,7 +24,7 @@ ____
 
 ### ___Ввод команд___
 Команды боту можно отправлять через кнопки в ___**Меню**___ бота или ручным вводом    
-![image](https://user-images.githubusercontent.com/107767949/202308290-255f6946-fdb3-4b06-8fd3-61cadbb1b364.png)
+<img src="https://user-images.githubusercontent.com/107767949/202308290-255f6946-fdb3-4b06-8fd3-61cadbb1b364.png" width="80%">
 
 ### ___Опросы___
 Бот позволяет участникам по команде ___/assamble___ запустить опросы по игровым мероприятиям, которые автоматически рассылаются всем пользователям.    
@@ -38,11 +38,11 @@ ____
 <details> 
   <summary>Примеры всех опросов после заполнения пользователем </summary>
   Первый опрос - готовность<br>
-  <img src="https://user-images.githubusercontent.com/107767949/202302735-d5133803-58ee-49bf-8295-3d25f6c23082.png" width="30%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202302735-d5133803-58ee-49bf-8295-3d25f6c23082.png" width="80%"><br>
   Второй опрос - выбор игры<br>
-  <img src="https://user-images.githubusercontent.com/107767949/202302761-183a9807-eaa8-4a61-abe3-2c434d0da794.png" width="30%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202302761-183a9807-eaa8-4a61-abe3-2c434d0da794.png" width="80%"><br>
   Третий опрос - выбор времени<br>
-  <img src="https://user-images.githubusercontent.com/107767949/202302792-3c8683fa-c9bf-4bae-a87d-4475bb7905c5.png" width="30%">
+  <img src="https://user-images.githubusercontent.com/107767949/202302792-3c8683fa-c9bf-4bae-a87d-4475bb7905c5.png" width="80%">
 </details>
 
 
@@ -52,8 +52,8 @@ ____
 - Общее — отображает все мероприятия, вне зависимости от личных предпочтениях, указанных в опросах
 <details> 
   <summary>Примеры расписаний </summary>
-  <img src="https://user-images.githubusercontent.com/107767949/202303455-4e9cf6fa-3d5d-4373-bfd1-1dfb5d090bd7.png" width="25%"><br>
-  <img src="https://user-images.githubusercontent.com/107767949/202303468-11030a77-661e-4687-9d51-f6ed76b57f56.png" width="25%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202303455-4e9cf6fa-3d5d-4373-bfd1-1dfb5d090bd7.png" width="80%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202303468-11030a77-661e-4687-9d51-f6ed76b57f56.png" width="80%"><br>
 </details>
 
 Расписания обновляются беззвучно каждую минуту.    
@@ -66,8 +66,8 @@ ____
 
 <details> 
   <summary>Пример окна настроек </summary>
-  <img src="https://user-images.githubusercontent.com/107767949/202306435-cb7ed686-6242-4d6c-b6cc-506af30dbbe0.png" width="45%"><br>
-  <img src="https://user-images.githubusercontent.com/107767949/202306485-e323370e-851c-4711-b7ec-be3a0f09015f.png" width="45%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202306435-cb7ed686-6242-4d6c-b6cc-506af30dbbe0.png" width="80%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202306485-e323370e-851c-4711-b7ec-be3a0f09015f.png" width="80%"><br>
 </details>
 
 ### ___Приглашения___
@@ -75,7 +75,7 @@ ____
 Для подтверждения используется личный автоматически генерируемый код.
 <details> 
   <summary>Пример приглашения </summary>
-  <img src="https://user-images.githubusercontent.com/107767949/202312540-650d2c84-591c-4004-ba51-fd7bab605dcc.png" width="40%"><br>
+  <img src="https://user-images.githubusercontent.com/107767949/202312540-650d2c84-591c-4004-ba51-fd7bab605dcc.png" width="80%"><br>
 </details>
 
 ____
