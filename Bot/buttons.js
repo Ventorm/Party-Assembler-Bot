@@ -49,13 +49,13 @@ const buttons = {
   ]),
   disablePersonalResult: [
     Markup.button.callback(
-      `🚫 Не показывать Персональное расписание 🚫`,
+      `🚫 Не показывать Личное расписание 🚫`,
       `disablePersonalResult`
     ),
   ],
   enablePersonalResult: [
     Markup.button.callback(
-      `📣 Показывать Персональное расписание 📣`,
+      `📣 Показывать Личное расписание 📣`,
       `enablePersonalResult`
     ),
   ],
@@ -125,7 +125,7 @@ const settingsButtons = async function (ctx, personal = true, updatedData) {
     enable_disable_switch: ``,
   };
   if (personal) {
-    show_settings.notification_text = `Персональные уведомления`;
+    show_settings.notification_text = `Личные уведомления`;
     show_settings.notification_command = `personal`;
     show_settings.other_schedule_text = `👉 Настроить Общее расписание 👈`;
     show_settings.other_schedule_command = "showFullSettings";
@@ -139,7 +139,7 @@ const settingsButtons = async function (ctx, personal = true, updatedData) {
   if (!personal) {
     show_settings.notification_text = `Общие уведомления`;
     show_settings.notification_command = `full`;
-    show_settings.other_schedule_text = `👉 Настроить Персональное расписание 👈`;
+    show_settings.other_schedule_text = `👉 Настроить Личное расписание 👈`;
     show_settings.other_schedule_command = "showPersonalSettings";
     if (currentSettings.enabled) {
       show_settings.enable_disable_switch = buttons.disableFullResult;
@@ -204,7 +204,7 @@ const actionProcessing = async function (ctx) {
   let player_vote;
 
   switch (data) {
-    // проверка, на какую кнопку из Персональных настроек было нажатие
+    // проверка, на какую кнопку из Личных настроек было нажатие
     case `showFullSettings`:
       createdButtons = await settingsButtons(ctx, false);
       await ctx.deleteMessage();

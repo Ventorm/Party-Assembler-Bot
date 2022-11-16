@@ -172,7 +172,7 @@ const createPersonalResult = async function (player_id, filledResult) {
     return `no_time_left`;
   }
 
-  // наполняем персональное расписание играми
+  // filling Personal schedule with games
   let personal_filled_result = [];
   let total_games = 0;
   for (let time_option = 0; time_option < filledResult.length; time_option++) {
@@ -268,7 +268,7 @@ const setResultToText = async function (resultObject, fullResult, player_id) {
   }
 
   if (!fullResult) {
-    normalResult += `<b>ПЕРСОНАЛЬНОЕ РАСПИСАНИЕ</b>`;
+    normalResult += `<b>ЛИЧНОЕ РАСПИСАНИЕ</b>`;
     // если результат является двумерным массивом с информацией о предстоящих играх, а не текстовым статусом
     if (typeof resultObject !== `string`) {
       normalResult += await createSchedule(resultObject, player_id);
@@ -386,7 +386,7 @@ const updateAllResultMessages = async function () {
         }
       }
 
-      // обновление и уведомление по Персональному расписанию
+      // updates and notify by Personal schedule
       if (player_settings[0].enabled) {
         let personalResult = await createPersonalResult(
           player_info.player_id,
@@ -398,7 +398,7 @@ const updateAllResultMessages = async function () {
           player_info.player_id
         );
 
-        // если Персональное расписание является пустым, то оно передаёт строку, а не массив, потому только обновить
+        // if Personal schedule is empty, then it will be a string
         if (typeof personalResult === `string`) {
           await Messages.edit(
             player_info.player_id,

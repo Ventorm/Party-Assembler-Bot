@@ -1,4 +1,5 @@
 .env
+config.js
 db.js
 sandbox.js
 sandbox 2.js
