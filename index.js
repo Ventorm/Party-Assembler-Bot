@@ -20,11 +20,11 @@ const {
   player_settingsAPI,
 } = require("./DB/db_API");
 
-//Launch Servers
+// launch Servers
 db_server();
 bot_server();
 
-// проверка, есть ли активные опросы (при перезапуске программы). Если да, то возобновить обновление расписания
+// checking if there are active polls (when bot is restarted). If yes, then continue to update schedules
 
 setTimeout(async () => {
   try {
@@ -37,7 +37,7 @@ setTimeout(async () => {
   }
 }, 2 * 1000);
 
-// действия при запуске
+// actions on launch
 setTimeout(async () => {
   const hh = ("0" + new Date().getHours().toString()).slice(-2);
   const mm = ("0" + new Date().getMinutes().toString()).slice(-2);
@@ -52,14 +52,6 @@ setTimeout(async () => {
     buttons.deleteThisMessage
   );
 
-  //const doNotLetToSleepAfter30Mins = schedule.scheduleJob(`*/20 * * * *`, async function () {await pollsAPI.get(1);});
-  const doNotLetToSleepAfter30Mins = schedule.scheduleJob(
-    `*/10 * * * *`,
-    async function () {
-      Messages.send(twinkByAdmin, `<i>I'm Alive!</i>`);
-      await pollsAPI.get(1);
-    }
-  );
 }, 1 * 1000);
 
 //#region DevRegion
