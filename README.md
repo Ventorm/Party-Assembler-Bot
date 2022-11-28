@@ -8,15 +8,16 @@ ____
 ## **Стек технологий**
   <img src="https://github.com/devicons/devicon/blob/master/icons/nodejs/nodejs-original.svg" title="Node.js" alt="Node.js" width="20" height="20"/>&nbsp;   **Node.js**    
   <img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original-wordmark.svg" title="PostgreSQL" alt="PostgreSQL" width="20" height="20"/>&nbsp;   **PostgreSQL**    
-  <img src="https://github.com/devicons/devicon/blob/master/icons/heroku/heroku-original-wordmark.svg" title="Heroku"  alt="Heroku" width="20" height="20"/>&nbsp;   **Heroku**    
-  <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" title="Postman"  alt="Postman" width="20" height="20"/>&nbsp;   **Postman**      
-  <img src="https://github.com/devicons/devicon/blob/master/icons/trello/trello-plain-wordmark.svg" title="Trello"  alt="Trello" width="20" height="20"/>&nbsp;   **Trello**    
   <img src="https://github.com/devicons/devicon/blob/master/icons/docker/docker-original-wordmark.svg" title="Docker"  alt="Docker" width="20" height="20"/>&nbsp;   **Docker**    
-  <img src="https://github.com/devicons/devicon/blob/master/icons/linux/linux-original.svg" title="Linux" alt="Linux" width="20" height="20"/>&nbsp;   **Linux**  
+  <img src="https://github.com/devicons/devicon/blob/master/icons/linux/linux-original.svg" title="Linux" alt="Linux" width="20" height="20"/>&nbsp;   **Linux**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/heroku/heroku-original-wordmark.svg" title="Heroku"  alt="Heroku" width="20" height="20"/>&nbsp;   **Heroku**    
+  <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" title="Postman"  alt="Postman" width="20" height="20"/>&nbsp;   **Postman**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/trello/trello-plain-wordmark.svg" title="Trello"  alt="Trello" width="20" height="20"/>&nbsp;   **Trello**    
 ____
 
 ## **Статус проекта**
-Бот развёрнут на платформе Heroku, а [написать боту в Telegram](https://t.me/party_assembler_bot) можно в любое время, в том числе найдя его через поиск ___@party_assembler_bot___   
+Бот развёрнут на VPS-сервере Linux в виде контейнера Docker с подключенной базой данных от ElephantSQL (ранее использовалась только платформа Heroku).    
+[Написать боту в Telegram](https://t.me/party_assembler_bot) можно в любое время, в том числе найдя его через поиск ___@party_assembler_bot___   
 ____
 
 ## **Функционал**
@@ -83,8 +84,7 @@ ____
 </details>
 
 ____
-## **Планы по развитию проекта**
-1. Упаковка бота и базы данных PostgreSQL в контейнеры, используя Docker-compose, а после перенос на VPS-сервер (Linux)
+## **Ближайшие возможные планы по развитию проекта**
+1. Адаптация функционала для большого количества пользователей, чтобы система могла удобно и логично распределить, например, 100 и более участников
 2. Дополнительные улучшения для пользователей, например уменьшение нажатий в опросах до 1-2 и без потери функционала
-3. Адаптация функционала для большого количества пользователей, чтобы система могла удобно и логично распределить, например, 100 и более участников
-4. Расширить документацию, отметив проблемы и задачи, которые были решены на момент разработки с указанием подходов и инструментов
+3. Расширить документацию, отметив проблемы и задачи, которые были решены на момент разработки с указанием подходов и инструментов
