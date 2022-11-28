@@ -25,7 +25,6 @@ db_server();
 bot_server();
 
 // checking if there are active polls (when bot is restarted). If yes, then continue to update schedules
-
 setTimeout(async () => {
   try {
     const mainPollData = (await pollsAPI.get(1)).data.message_id;
