@@ -10,13 +10,14 @@ ____
   <img src="https://github.com/devicons/devicon/blob/master/icons/postgresql/postgresql-original-wordmark.svg" title="PostgreSQL" alt="PostgreSQL" width="20" height="20"/>&nbsp;   **PostgreSQL**    
   <img src="https://github.com/devicons/devicon/blob/master/icons/docker/docker-original-wordmark.svg" title="Docker"  alt="Docker" width="20" height="20"/>&nbsp;   **Docker**    
   <img src="https://github.com/devicons/devicon/blob/master/icons/linux/linux-original.svg" title="Linux" alt="Linux" width="20" height="20"/>&nbsp;   **Linux**    
-  <img src="https://github.com/devicons/devicon/blob/master/icons/heroku/heroku-original-wordmark.svg" title="Heroku"  alt="Heroku" width="20" height="20"/>&nbsp;   **Heroku**    
+  <img src="https://user-images.githubusercontent.com/107767949/204401489-dd1474bb-e496-4ffe-96f1-a4eb38e7d122.png" title="Telegram Bot API"  alt="Telegram Bot API" width="20" height="20"/>&nbsp;   **Telegram Bot API**    
   <img src="https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg" title="Postman"  alt="Postman" width="20" height="20"/>&nbsp;   **Postman**    
   <img src="https://github.com/devicons/devicon/blob/master/icons/trello/trello-plain-wordmark.svg" title="Trello"  alt="Trello" width="20" height="20"/>&nbsp;   **Trello**    
+  <img src="https://github.com/devicons/devicon/blob/master/icons/heroku/heroku-original-wordmark.svg" title="Heroku"  alt="Heroku" width="20" height="20"/>&nbsp;   **Heroku**    
 ____
 
 ## **Статус проекта**
-Бот развёрнут на VPS-сервере Linux в виде контейнера Docker с подключенной базой данных от ElephantSQL (ранее использовалась только платформа Heroku).    
+Бот развёрнут на VPS-сервере Linux в виде контейнера Docker с подключенной базой данных от ElephantSQL (ранее использовалась платформа Heroku).    
 [Написать боту в Telegram](https://t.me/party_assembler_bot) можно в любое время, в том числе найдя его через поиск ___@party_assembler_bot___   
 ____
 
