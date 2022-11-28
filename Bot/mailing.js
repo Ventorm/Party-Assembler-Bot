@@ -497,22 +497,30 @@ const beforeMailing = async function (sender) {
 };
 
 const mailing = async function (hours, minutes, sender) {
-  await Messages.send(sender.id, texts.forPollsCreator);
-
-  const checkPoll = await createCheckPoll(true);
-  await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id);
-
-  const gamePoll = await createGamePoll();
-  await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id);
-
   if (hours < end_time - 1 || (hours === end_time - 1 && minutes < 30)) {
+    const checkPoll = await createCheckPoll(true);
+    await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id);
+
+    const gamePoll = await createGamePoll();
+    await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id);
+
     const timePoll = await createTimePoll();
     await pollsAPI.update(3, timePoll.poll.id, timePoll.message_id);
+
+    enableResultUpdates();
+
+    mailingFirstPoll(checkPoll.message_id);
+  } else {
+    const checkPoll = await createCheckPoll(false);
+    await pollsAPI.update(1, checkPoll.poll.id, checkPoll.message_id);
+
+    const gamePoll = await createGamePoll();
+    await pollsAPI.update(2, gamePoll.poll.id, gamePoll.message_id);
+
+    enableResultUpdates();
+
+    mailingFirstPoll(checkPoll.message_id);
   }
-
-  enableResultUpdates();
-
-  mailingFirstPoll(checkPoll.message_id);
 
   if (sender.id !== parseInt(admin)) {
     if (!sender.username) {
@@ -533,13 +541,13 @@ const mailing = async function (hours, minutes, sender) {
 
 const mailingFirstPoll = async function (message_id) {
   const players = (await playersAPI.getAll(true)).data;
-  for (let index = 0; index < players.length; index++) {
-    if (players[index].enabled) {
-      await player_voteAPI.create(players[index].id);
-      await Messages.forward(players[index].id, message_id);
+  players.forEach((player) => {
+    if (player.enabled) {
+      player_voteAPI.create(player.id);
+      Messages.forward(player.id, message_id);
     }
-  }
-  console.log("Рассылка завершена (первый опрос)");
+  });
+  return "Рассылка завершена (первый опрос)";
 };
 
 const createCheckPoll = async function (normal = true) {
