@@ -355,8 +355,8 @@ const updateAllResultMessages = async function () {
           );
         } else {
           let time_check_id = end_time - currentHour - 1;
-          // если нет игр в ближайший час
-          if (fullResult[time_check_id].length === 0) {
+          // если осталось меньше часа до остановки опросов или нет игр в ближайший час
+          if (time_check_id < 0 || !fullResult[time_check_id].length) {
             await Messages.edit(
               player_info.player_id,
               normalFullResult,
@@ -414,8 +414,8 @@ const updateAllResultMessages = async function () {
             );
           } else {
             let time_check_id = end_time - currentHour - 1;
-            // если нет игр в ближайший час
-            if (personalResult[time_check_id].length === 0) {
+            // если осталось меньше часа до остановки опросов или нет игр в ближайший час
+            if (time_check_id < 0 || !personalResult[time_check_id].length) {
               await Messages.edit(
                 player_info.player_id,
                 normalPersonalResult,
