@@ -14,6 +14,7 @@ const Messages = require("../components/Messages");
 const Polls = require("../components/Polls");
 const { texts } = require("./texts.js");
 const { admin, twinkByAdmin } = require("../config");
+const { buttons } = require("./buttons");
 //const { errorProcessing } = require("./functions");
 
 const addToMailing = async function (user_id) {
@@ -474,7 +475,12 @@ const beforeMailing = async function (sender) {
   if (await pollsCreatedToday()) {
     return Messages.send(
       sender.id,
-      texts.alreadyFinished + "\n\n" + texts.time_for_create
+      texts.alreadyFinished +
+        `\n\n` +
+        texts.time_for_create +
+        `\n\n` +
+        texts.schedule_assemble,
+      buttons.deleteThisMessage
     );
   }
 
@@ -484,13 +490,23 @@ const beforeMailing = async function (sender) {
   if (hours >= end_time) {
     return Messages.send(
       sender.id,
-      texts.too_late + "\n\n" + texts.time_for_create
+      texts.too_late +
+        `\n\n` +
+        texts.time_for_create +
+        `\n\n` +
+        texts.schedule_assemble,
+      buttons.deleteThisMessage
     );
   }
   if (hours < start_time) {
     return Messages.send(
       sender.id,
-      texts.too_early + "\n\n" + texts.time_for_create
+      texts.too_early +
+        `\n\n` +
+        texts.time_for_create +
+        `\n\n` +
+        texts.schedule_assemble,
+      buttons.deleteThisMessage
     );
   }
   return mailing(hours, minutes, sender);

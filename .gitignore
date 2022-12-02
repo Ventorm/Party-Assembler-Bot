@@ -4,8 +4,8 @@ sandbox.js
 sandbox 2.js
 ts_sandbox.ts
 test_functions.js
-dev .env
-dev (local).env
+1local dev .env
+2dev .env
 
 docker-compose.yml
 
